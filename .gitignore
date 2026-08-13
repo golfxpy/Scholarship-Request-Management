@@ -1,0 +1,25 @@
+# Build outputs
+**/bin/
+**/obj/
+
+# IDE and user-specific files
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Test results and coverage
+TestResults/
+coverage/
+*.coverage
+*.trx
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Operating system files
+.DS_Store
+Thumbs.db
