@@ -1,0 +1,42 @@
+.route-access-message {
+    width: min(620px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 7rem 0;
+    color: #17324d;
+    text-align: center;
+}
+
+.route-access-icon {
+    display: inline-grid;
+    min-width: 3.25rem;
+    min-height: 3.25rem;
+    padding: .5rem;
+    border-radius: 50%;
+    place-items: center;
+    color: #fff;
+    background: #a86508;
+    font-weight: 800;
+}
+
+.route-access-message h1 {
+    margin: 1rem 0 .5rem;
+}
+
+.route-access-message p {
+    margin: 0 0 1.5rem;
+    color: #516678;
+}
+
+.route-access-button {
+    display: inline-flex;
+    min-height: 2.75rem;
+    padding: .6rem 1rem;
+    border: 0;
+    border-radius: 8px;
+    align-items: center;
+    color: #fff;
+    background: #155e8a;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}

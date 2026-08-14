@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ScholarshipRequest.Api\ScholarshipRequest.Api.csproj" />
+    <ProjectReference Include="..\..\src\ScholarshipRequest.Client\ScholarshipRequest.Client.csproj" />
     <ProjectReference Include="..\..\src\ScholarshipRequest.Shared\ScholarshipRequest.Shared.csproj" />
   </ItemGroup>
 

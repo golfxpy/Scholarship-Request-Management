@@ -1,0 +1,33 @@
+@inject StaffAuthenticationStateProvider AuthenticationProvider
+
+@if (AuthenticationProvider.Availability == StaffAuthenticationAvailability.Unavailable)
+{
+    <section class="route-access-message" aria-labelledby="session-unavailable-title">
+        <span class="route-access-icon" aria-hidden="true">!</span>
+        <h1 id="session-unavailable-title">ไม่สามารถตรวจสอบสถานะการเข้าสู่ระบบได้</h1>
+        <p>ระบบยังไม่ยืนยันว่าคุณออกจากระบบ กรุณาตรวจสอบเครือข่ายแล้วลองใหม่</p>
+        <button class="route-access-button" type="button" @onclick="RetryAsync">
+            ลองตรวจสอบอีกครั้ง
+        </button>
+    </section>
+}
+else if (AuthenticationState.User.Identity?.IsAuthenticated != true)
+{
+    <RedirectToLogin />
+}
+else
+{
+    <section class="route-access-message" aria-labelledby="forbidden-title">
+        <span class="route-access-icon" aria-hidden="true">403</span>
+        <h1 id="forbidden-title">บัญชีนี้ไม่มีสิทธิ์เข้าถึง</h1>
+        <p>กรุณาติดต่อผู้ดูแลระบบหากคุณควรได้รับสิทธิ์เจ้าหน้าที่</p>
+        <a class="route-access-button" href="/">กลับหน้าหลัก</a>
+    </section>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public AuthenticationState AuthenticationState { get; set; } = default!;
+
+    private Task RetryAsync() => AuthenticationProvider.RetrySessionAsync();
+}

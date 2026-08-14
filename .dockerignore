@@ -1,0 +1,17 @@
+.git
+.github
+.vs
+.vscode
+**/bin
+**/obj
+**/TestResults
+coverage
+.env
+.env.*
+!.env.example
+*.user
+*.suo
+README.md
+docs
+deploy
+**/.keys

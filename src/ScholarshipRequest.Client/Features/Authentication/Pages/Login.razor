@@ -1,0 +1,95 @@
+@page "/login"
+@page "/admin/login"
+@layout MainLayout
+
+<PageTitle>เข้าสู่ระบบเจ้าหน้าที่</PageTitle>
+
+<section class="login-page" aria-labelledby="login-title">
+    <MudPaper Class="login-card" Elevation="1">
+        <div class="login-heading">
+            <span class="login-mark" aria-hidden="true">S</span>
+            <div>
+                <span class="login-eyebrow">STAFF PORTAL</span>
+                <h1 id="login-title">เข้าสู่ระบบเจ้าหน้าที่</h1>
+                <p>จัดการและพิจารณาคำขอทุนการศึกษา</p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
+        {
+            <div class="login-error" role="alert" tabindex="-1" @ref="_errorSummary">
+                <strong>เข้าสู่ระบบไม่สำเร็จ</strong>
+                <span>@_errorMessage</span>
+            </div>
+        }
+
+        <EditForm Model="_model"
+                  OnValidSubmit="LoginAsync"
+                  OnInvalidSubmit="HandleInvalidSubmit"
+                  FormName="staff-login"
+                  aria-busy="@_submitting.ToString().ToLowerInvariant()">
+            <DataAnnotationsValidator />
+            <div class="validation-summary-wrapper"
+                 role="alert"
+                 aria-live="polite"
+                 tabindex="-1"
+                 @ref="_validationSummary">
+                <ValidationSummary class="validation-summary" />
+            </div>
+
+            <div class="form-field">
+                <label for="staff-username">ชื่อผู้ใช้</label>
+                <input id="staff-username"
+                       class="text-input"
+                       @bind="_model.UserName"
+                       @bind:event="oninput"
+                       autocomplete="username"
+                       maxlength="100"
+                       aria-required="true"
+                       disabled="@_submitting" />
+                <ValidationMessage For="@(() => _model.UserName)" />
+            </div>
+
+            <div class="form-field">
+                <label for="staff-password">รหัสผ่าน</label>
+                <div class="password-field">
+                    <input id="staff-password"
+                           class="text-input"
+                           type="@(_showPassword ? "text" : "password")"
+                           @bind="_model.Password"
+                           @bind:event="oninput"
+                           autocomplete="current-password"
+                           maxlength="200"
+                           aria-required="true"
+                           disabled="@_submitting" />
+                    <button type="button"
+                            class="password-toggle"
+                            aria-label="@(_showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน")"
+                            aria-pressed="@_showPassword.ToString().ToLowerInvariant()"
+                            disabled="@_submitting"
+                            @onclick="TogglePassword">
+                        @(_showPassword ? "ซ่อน" : "แสดง")
+                    </button>
+                </div>
+                <ValidationMessage For="@(() => _model.Password)" />
+            </div>
+
+            <button class="login-button" type="submit" disabled="@_submitting">
+                @if (_submitting)
+                {
+                    <span class="button-spinner" aria-hidden="true"></span>
+                    <span>กำลังตรวจสอบ...</span>
+                }
+                else
+                {
+                    <span>เข้าสู่ระบบ</span>
+                }
+            </button>
+        </EditForm>
+
+        <div class="login-help">
+            <a href="/">กลับไปหน้าสำหรับนักศึกษา</a>
+            <span>หากลืมรหัสผ่าน กรุณาติดต่อผู้ดูแลระบบ</span>
+        </div>
+    </MudPaper>
+</section>

@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ScholarshipRequest.Client</title>
+    <meta name="description" content="ระบบจัดการคำขอทุนการศึกษา" />
+    <title>ระบบจัดการคำขอทุนการศึกษา</title>
     <base href="/" />
     <link rel="preload" id="webassembly" />
-    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css?v=9.7.0" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="ScholarshipRequest.Client.styles.css" rel="stylesheet" />
@@ -16,18 +17,19 @@
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
+        <svg class="loading-progress" aria-hidden="true">
             <circle r="40%" cx="50%" cy="50%" />
             <circle r="40%" cx="50%" cy="50%" />
         </svg>
-        <div class="loading-progress-text"></div>
+        <div class="loading-progress-text" role="status" aria-live="polite"></div>
     </div>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="." class="reload">Reload</a>
-        <span class="dismiss">🗙</span>
+    <div id="blazor-error-ui" role="alert">
+        เกิดข้อผิดพลาดที่ไม่คาดคิด
+        <a href="." class="reload">โหลดหน้าใหม่</a>
+        <button type="button" class="dismiss" aria-label="ปิดข้อความ">×</button>
     </div>
+    <script src="_content/MudBlazor/MudBlazor.min.js?v=9.7.0"></script>
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
 </body>
 

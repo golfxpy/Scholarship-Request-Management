@@ -1,0 +1,8 @@
+.route-status {
+    display: grid;
+    min-height: 45vh;
+    padding: 2rem;
+    place-items: center;
+    color: #516678;
+    text-align: center;
+}

@@ -1,0 +1,224 @@
+@page "/admin/requests/new"
+@page "/admin/requests/{Id:guid}/edit"
+@layout AdminLayout
+@attribute [Authorize(Policy = AuthenticationConstants.StaffPolicy)]
+@implements IAsyncDisposable
+
+<PageTitle>@(IsEdit ? "แก้ไขคำขอทุน" : "เพิ่มคำขอแทนนักศึกษา")</PageTitle>
+
+<section class="request-form-page" aria-labelledby="request-form-title" aria-busy="@_loading">
+    <a class="back-link" href="@BackUrl">← @(IsEdit ? "กลับรายละเอียดคำขอ" : "กลับรายการคำขอ")</a>
+
+    <header>
+        <span class="eyebrow">@(IsEdit ? "EDIT REQUEST" : "STAFF SUBMISSION")</span>
+        <h1 id="request-form-title">@(IsEdit ? "แก้ไขคำขอทุน" : "เพิ่มคำขอแทนนักศึกษา")</h1>
+        <p>@(IsEdit
+            ? "แก้ไขได้เฉพาะคำขอที่ยังรอพิจารณา"
+            : "คำขอจะเริ่มต้นที่สถานะ Pending และต้องบันทึกหลักฐาน consent")</p>
+    </header>
+
+    @if (_loading)
+    {
+        <div class="state-card" role="status">กำลังเตรียมแบบฟอร์ม...</div>
+    }
+    else if (_loadError is not null)
+    {
+        <div class="state-card error-state" role="alert">
+            <h2>@_loadError.Title</h2>
+            <p>@(_loadError.Detail ?? "กรุณาลองอีกครั้ง")</p>
+            <button type="button" @onclick="LoadAsync">ลองอีกครั้ง</button>
+        </div>
+    }
+    else
+    {
+        <EditForm Model="_model" OnValidSubmit="SubmitAsync" OnInvalidSubmit="HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            @if (_serverError is not null)
+            {
+                <div class="server-error" role="alert" tabindex="-1" @ref="_errorSummary">
+                    <strong>@_serverError.Title</strong>
+                    <span>@(_serverError.Detail ?? "กรุณาตรวจสอบข้อมูลแล้วลองอีกครั้ง")</span>
+                    @if (_serverError.FieldErrors.Count > 0)
+                    {
+                        <ul>
+                            @foreach (var message in _serverError.FieldErrors.SelectMany(item => item.Value))
+                            {
+                                <li>@message</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            }
+
+            <div class="validation-summary" tabindex="-1" @ref="_validationSummary">
+                <ValidationSummary />
+            </div>
+
+            <section class="form-card" aria-labelledby="student-form-section">
+                <h2 id="student-form-section">ข้อมูลนักศึกษา</h2>
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="student-id">รหัสนักศึกษา <span aria-hidden="true">*</span></label>
+                        <input id="student-id"
+                               @bind="_model.StudentId"
+                               @bind:event="oninput"
+                               maxlength="20"
+                               readonly="@IsEdit"
+                               aria-describedby="@(IsEdit ? "student-id-lock-note" : null)" />
+                        @if (IsEdit)
+                        {
+                            <small id="student-id-lock-note">ไม่สามารถเปลี่ยนรหัสนักศึกษาได้ เพื่อให้หลักฐาน consent อ้างอิงบุคคลเดิม</small>
+                        }
+                        <ValidationMessage For="() => _model.StudentId" />
+                    </div>
+                    <div class="field">
+                        <label for="student-name">ชื่อ-นามสกุล <span aria-hidden="true">*</span></label>
+                        <input id="student-name" @bind="_model.StudentName" @bind:event="oninput" maxlength="200" />
+                        <ValidationMessage For="() => _model.StudentName" />
+                    </div>
+                    <div class="field">
+                        <label for="faculty">คณะ/หน่วยการเรียน <span aria-hidden="true">*</span></label>
+                        <input id="faculty"
+                               @bind="_model.FacultyName"
+                               @bind:event="oninput"
+                               maxlength="200"
+                               readonly="@(IsEdit && _model.AcademicUnitId.HasValue)"
+                               aria-describedby="@(IsEdit && _model.AcademicUnitId.HasValue ? "faculty-lock-note" : null)" />
+                        @if (IsEdit && _model.AcademicUnitId.HasValue)
+                        {
+                            <small id="faculty-lock-note">คณะอ้างอิงจากข้อมูลหลักของระบบและไม่สามารถแก้เป็นข้อความอิสระได้</small>
+                        }
+                        <ValidationMessage For="() => _model.FacultyName" />
+                    </div>
+                    <div class="field">
+                        <label for="major">หลักสูตร/สาขาวิชา</label>
+                        <input id="major" @bind="_model.Major" @bind:event="oninput" maxlength="150" />
+                        <ValidationMessage For="() => _model.Major" />
+                    </div>
+                    <div class="field">
+                        <label for="year-level">ชั้นปี <span aria-hidden="true">*</span></label>
+                        <InputSelect id="year-level" @bind-Value="_model.YearSelection">
+                            <option value="">เลือกชั้นปี</option>
+                            @for (var year = 1; year <= 6; year++)
+                            {
+                                <option value="@year.ToString()">ชั้นปี @year</option>
+                            }
+                            <option value="Other">อื่น ๆ / เกินระยะเวลาหลักสูตร</option>
+                        </InputSelect>
+                        <ValidationMessage For="() => _model.YearSelection" />
+                    </div>
+                    @if (_model.YearSelection == "Other")
+                    {
+                        <div class="field">
+                            <label for="year-other">ระบุชั้นปี/กรณีอื่น <span aria-hidden="true">*</span></label>
+                            <input id="year-other" @bind="_model.YearLevelOther" @bind:event="oninput" maxlength="100" />
+                            <ValidationMessage For="() => _model.YearLevelOther" />
+                        </div>
+                    }
+                    <div class="field">
+                        <label for="gpax">GPAX <span aria-hidden="true">*</span></label>
+                        <input id="gpax" type="number" @bind="_model.Gpax" @bind:event="oninput" min="0" max="4" step="0.01" />
+                        <ValidationMessage For="() => _model.Gpax" />
+                    </div>
+                    <div class="field">
+                        <label for="email">อีเมล <span aria-hidden="true">*</span></label>
+                        <input id="email" type="email" @bind="_model.Email" @bind:event="oninput" maxlength="254" />
+                        <ValidationMessage For="() => _model.Email" />
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card" aria-labelledby="funding-form-section">
+                <h2 id="funding-form-section">ข้อมูลทุนและการเงิน</h2>
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="scholarship-type">ประเภททุน <span aria-hidden="true">*</span></label>
+                        <InputSelect id="scholarship-type" @bind-Value="_model.ScholarshipTypeId">
+                            <option value="">เลือกประเภททุน</option>
+                            @foreach (var type in _scholarshipTypes.Where(type => type.IsActive ||
+                                type.Id.ToString() == _model.ScholarshipTypeId))
+                            {
+                                <option value="@type.Id.ToString()">@type.Name</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => _model.ScholarshipTypeId" />
+                    </div>
+                    <div class="field">
+                        <label for="amount">จำนวนเงินที่ขอ (บาท) <span aria-hidden="true">*</span></label>
+                        <input id="amount" type="number" @bind="_model.RequestedAmount" @bind:event="oninput" min="0.01" step="0.01" />
+                        <ValidationMessage For="() => _model.RequestedAmount" />
+                    </div>
+                    <div class="field">
+                        <label for="bank-account">
+                            เลขบัญชีธนาคาร @if (!IsEdit) { <span aria-hidden="true">*</span> }
+                        </label>
+                        <input id="bank-account"
+                               inputmode="numeric"
+                               autocomplete="off"
+                               @bind="_model.BankAccountNumber"
+                               @bind:event="oninput"
+                               maxlength="40"
+                               placeholder="@(IsEdit ? "เว้นว่างหากไม่เปลี่ยนเลขบัญชี" : "ตัวเลข เว้นวรรค หรือขีดกลาง")" />
+                        <ValidationMessage For="() => _model.BankAccountNumber" />
+                    </div>
+                    <div class="field">
+                        <label for="bank-confirm">ยืนยันเลขบัญชี @if (!IsEdit) { <span aria-hidden="true">*</span> }</label>
+                        <input id="bank-confirm"
+                               inputmode="numeric"
+                               autocomplete="off"
+                               @bind="_model.BankAccountConfirmation"
+                               @bind:event="oninput"
+                               maxlength="40" />
+                        <ValidationMessage For="() => _model.BankAccountConfirmation" />
+                    </div>
+                    <div class="field full-width">
+                        <label for="reason">เหตุผลในการขอทุน <span aria-hidden="true">*</span></label>
+                        <textarea id="reason" @bind="_model.Reason" @bind:event="oninput" maxlength="2000" rows="5"></textarea>
+                        <ValidationMessage For="() => _model.Reason" />
+                    </div>
+                </div>
+            </section>
+
+            @if (!IsEdit && _pdpaNotice is not null)
+            {
+                <section class="form-card consent-card" aria-labelledby="consent-form-section">
+                    <h2 id="consent-form-section">หลักฐาน consent</h2>
+                    <p class="consent-intro">
+                        เจ้าหน้าที่ต้องยืนยันว่าได้รับ consent จากนักศึกษา ไม่ใช่ให้ consent แทนนักศึกษา
+                    </p>
+                    <div class="notice-text">@_pdpaNotice.Content</div>
+                    <p class="notice-version">ประกาศเวอร์ชัน @_pdpaNotice.Version</p>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="consent-method">วิธีรับ consent <span aria-hidden="true">*</span></label>
+                            <InputSelect id="consent-method" @bind-Value="_model.ConsentMethod">
+                                <option value="">เลือกวิธีรับ consent</option>
+                                <option value="Document">เอกสาร</option>
+                                <option value="Verbal">วาจา</option>
+                                <option value="Other">วิธีอื่น</option>
+                            </InputSelect>
+                            <ValidationMessage For="() => _model.ConsentMethod" />
+                        </div>
+                        <div class="field full-width">
+                            <label for="consent-evidence">หลักฐาน/บันทึกประกอบ <span aria-hidden="true">*</span></label>
+                            <textarea id="consent-evidence"
+                                      @bind="_model.ConsentEvidenceNote"
+                                      @bind:event="oninput"
+                                      maxlength="500"
+                                      rows="4"></textarea>
+                            <ValidationMessage For="() => _model.ConsentEvidenceNote" />
+                        </div>
+                    </div>
+                </section>
+            }
+
+            <div class="form-actions">
+                <a href="@BackUrl">ยกเลิก</a>
+                <button type="submit" disabled="@_submitting">
+                    @(_submitting ? "กำลังบันทึก..." : IsEdit ? "บันทึกการแก้ไข" : "สร้างคำขอ")
+                </button>
+            </div>
+        </EditForm>
+    }
+</section>

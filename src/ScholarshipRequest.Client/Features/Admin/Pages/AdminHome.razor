@@ -1,0 +1,113 @@
+@page "/admin"
+@layout AdminLayout
+@attribute [Authorize(Policy = AuthenticationConstants.StaffPolicy)]
+
+<PageTitle>แดชบอร์ดคำขอทุน</PageTitle>
+
+<section class="dashboard" aria-labelledby="dashboard-title" aria-busy="@_loading">
+    <header>
+        <span class="eyebrow">STAFF DASHBOARD</span>
+        <h1 id="dashboard-title">ภาพรวมคำขอทุนการศึกษา</h1>
+        <p>ข้อมูลรวมของคำขอที่ยังไม่ถูกลบในระบบ</p>
+    </header>
+
+    @if (_loading)
+    {
+        <div class="state-card" role="status">กำลังโหลดแดชบอร์ด...</div>
+    }
+    else if (_error is not null)
+    {
+        <div class="state-card error-state" role="alert">
+            <h2>@_error.Title</h2>
+            <p>@(_error.Detail ?? "กรุณาลองอีกครั้ง")</p>
+            <button type="button" @onclick="LoadAsync">ลองอีกครั้ง</button>
+        </div>
+    }
+    else if (_summary is not null)
+    {
+        <div class="summary-cards">
+            <a class="summary-card total-card" href="/admin/requests">
+                <span>คำขอทั้งหมด</span>
+                <strong>@_summary.TotalRequests.ToString("N0")</strong>
+                <small>รวม @FormatMoney(_summary.TotalRequestedAmount)</small>
+            </a>
+            <a class="summary-card pending-card" href="/admin/requests?status=Pending">
+                <span>รอพิจารณา</span>
+                <strong>@_summary.PendingRequests.ToString("N0")</strong>
+                <small>Pending</small>
+            </a>
+            <a class="summary-card approved-card" href="/admin/requests?status=Approved">
+                <span>อนุมัติ</span>
+                <strong>@_summary.ApprovedRequests.ToString("N0")</strong>
+                <small>Approved</small>
+            </a>
+            <a class="summary-card rejected-card" href="/admin/requests?status=Rejected">
+                <span>ปฏิเสธ</span>
+                <strong>@_summary.RejectedRequests.ToString("N0")</strong>
+                <small>Rejected</small>
+            </a>
+        </div>
+
+        <div class="dashboard-grid">
+            <section class="dashboard-card" aria-labelledby="status-chart-title">
+                <div class="card-header">
+                    <div>
+                        <h2 id="status-chart-title">สัดส่วนตามสถานะ</h2>
+                        <p>จำนวนคำขอในแต่ละสถานะ</p>
+                    </div>
+                </div>
+                <div class="bar-chart" role="img" aria-label="กราฟจำนวนคำขอแยกตามสถานะ">
+                    @foreach (var item in StatusChartItems)
+                    {
+                        <div class="bar-row">
+                            <span>@item.Label</span>
+                            <div class="bar-track" aria-hidden="true">
+                                <div class="bar-fill @item.CssClass" style="width: @BarWidth(item.Value)%"></div>
+                            </div>
+                            <strong>@item.Value.ToString("N0")</strong>
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <section class="dashboard-card type-summary" aria-labelledby="type-summary-title">
+                <div class="card-header">
+                    <div>
+                        <h2 id="type-summary-title">สรุปตามประเภททุน</h2>
+                        <p>จำนวนคำขอและยอดเงินที่ขอรวมทุกสถานะ</p>
+                    </div>
+                </div>
+                @if (_summary.ByScholarshipType.Count == 0)
+                {
+                    <p class="empty-text">ยังไม่มีข้อมูลประเภททุน</p>
+                }
+                else
+                {
+                    <div class="type-table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">ประเภททุน</th>
+                                    <th scope="col">จำนวนคำขอ</th>
+                                    <th scope="col">ยอดเงินรวม</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in _summary.ByScholarshipType)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="@TypeFilterUrl(item.ScholarshipTypeId)">@item.ScholarshipTypeName</a>
+                                        </td>
+                                        <td>@item.RequestCount.ToString("N0")</td>
+                                        <td>@FormatMoney(item.TotalRequestedAmount)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </section>
+        </div>
+    }
+</section>

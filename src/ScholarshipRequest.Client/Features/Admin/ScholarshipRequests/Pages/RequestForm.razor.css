@@ -1,0 +1,245 @@
+.request-form-page {
+    width: min(100%, 1000px);
+    margin: 0 auto;
+}
+
+.back-link {
+    display: inline-flex;
+    margin-bottom: 1rem;
+    color: #0e567f;
+    font-weight: 700;
+}
+
+header {
+    margin-bottom: 1.25rem;
+}
+
+.eyebrow {
+    color: #155e8a;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+}
+
+header h1 {
+    margin: .25rem 0 .35rem;
+    color: #17324d;
+    font-size: clamp(1.65rem, 4vw, 2.35rem);
+}
+
+header p {
+    margin: 0;
+    color: #516678;
+}
+
+.form-card {
+    margin-bottom: 1rem;
+    padding: 1.2rem;
+    border: 1px solid #d5e1e9;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.form-card h2 {
+    margin: 0 0 1rem;
+    color: #263f55;
+    font-size: 1.1rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: .35rem;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.field label {
+    color: #334f65;
+    font-size: .84rem;
+    font-weight: 700;
+}
+
+.field label span {
+    color: #a52820;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    min-height: 2.65rem;
+    padding: .55rem .65rem;
+    border: 1px solid #aebfcb;
+    border-radius: 8px;
+    color: #17324d;
+    background: #fff;
+}
+
+.field textarea {
+    min-height: 7rem;
+    resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.form-actions a:focus-visible,
+.form-actions button:focus-visible,
+.back-link:focus-visible,
+.state-card button:focus-visible {
+    outline: 3px solid #78bce3;
+    outline-offset: 2px;
+}
+
+.validation-message {
+    color: #8a2923;
+    font-size: .78rem;
+}
+
+.validation-summary ul {
+    margin: 0 0 1rem;
+    padding: .8rem 1rem .8rem 2rem;
+    border: 1px solid #e5b5b1;
+    border-radius: 8px;
+    color: #7c241f;
+    background: #fff7f6;
+}
+
+.validation-summary:empty,
+.validation-summary ul:empty {
+    display: none;
+}
+
+.server-error {
+    display: flex;
+    margin-bottom: 1rem;
+    padding: .85rem 1rem;
+    flex-direction: column;
+    gap: .2rem;
+    border: 1px solid #e5b5b1;
+    border-radius: 8px;
+    color: #7c241f;
+    background: #fff7f6;
+}
+
+.server-error ul {
+    margin: .4rem 0 0;
+}
+
+.consent-card {
+    border-color: #b8d0df;
+}
+
+.consent-intro {
+    margin: -.25rem 0 .8rem;
+    color: #334f65;
+    font-weight: 700;
+}
+
+.notice-text {
+    max-height: 12rem;
+    padding: .85rem;
+    overflow: auto;
+    border: 1px solid #d5e1e9;
+    border-radius: 8px;
+    color: #334f65;
+    background: #f7f9fb;
+    font-size: .85rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.notice-version {
+    margin: .45rem 0 1rem;
+    color: #516678;
+    font-size: .78rem;
+}
+
+.form-actions {
+    display: flex;
+    padding: .5rem 0 1.5rem;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .75rem;
+}
+
+.form-actions a,
+.form-actions button,
+.state-card button {
+    display: inline-flex;
+    min-height: 2.7rem;
+    padding: .6rem 1rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: 800;
+}
+
+.form-actions a,
+.state-card button {
+    border: 1px solid #aebfcb;
+    color: #26465f;
+    background: #fff;
+    text-decoration: none;
+}
+
+.form-actions button {
+    border: 1px solid #155e8a;
+    color: #fff;
+    background: #155e8a;
+    cursor: pointer;
+}
+
+.form-actions button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.state-card {
+    display: grid;
+    min-height: 14rem;
+    padding: 2rem;
+    place-items: center;
+    align-content: center;
+    border: 1px solid #d5e1e9;
+    border-radius: 12px;
+    text-align: center;
+    background: #fff;
+}
+
+.state-card h2,
+.state-card p {
+    margin: .25rem 0;
+}
+
+.error-state {
+    border-color: #e5b5b1;
+    background: #fff7f6;
+}
+
+@media (max-width: 680px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 420px) {
+    .form-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+}
