@@ -3,7 +3,7 @@
 
 <PageTitle>ยื่นคำขอทุนการศึกษา</PageTitle>
 
-<div class="apply-page">
+<MudContainer MaxWidth="MaxWidth.Large" Class="apply-page">
     <header class="page-heading">
         <span class="eyebrow">SCHOLARSHIP REQUEST</span>
         <h1>ยื่นคำขอทุนการศึกษา</h1>
@@ -12,18 +12,16 @@
 
     @if (_isLoading)
     {
-        <div class="state-card" role="status" aria-live="polite">
+        <MudPaper Outlined="true" Class="state-card" role="status" aria-live="polite">
             <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" />
             <h2>กำลังเตรียมแบบฟอร์ม</h2>
             <p>กำลังโหลดประเภททุนและประกาศความเป็นส่วนตัว</p>
-        </div>
+        </MudPaper>
     }
     else if (!_canUseForm)
     {
-        <div class="state-card error-state"
-             role="alert"
-             tabindex="-1"
-             @ref="_feedbackElement">
+        <div class="feedback-focus" tabindex="-1" @ref="_feedbackElement">
+        <MudPaper Outlined="true" Class="state-card error-state" role="alert">
             <div class="state-icon" aria-hidden="true">!</div>
             <h2>@(_globalErrorTitle ?? "ยังไม่สามารถเปิดแบบฟอร์มได้")</h2>
             <p>@(_globalErrorDetail ?? "กรุณาลองใหม่อีกครั้ง")</p>
@@ -32,15 +30,13 @@
                        OnClick="RetryInitialLoadAsync">
                 ลองโหลดใหม่
             </MudButton>
+        </MudPaper>
         </div>
     }
     else if (_createdRequest is not null)
     {
-        <section class="state-card success-state"
-                 role="status"
-                 aria-live="polite"
-                 tabindex="-1"
-                 @ref="_feedbackElement">
+        <div class="feedback-focus" tabindex="-1" @ref="_feedbackElement">
+        <MudPaper Outlined="true" Class="state-card success-state" role="status" aria-live="polite">
             <div class="success-mark" aria-hidden="true">✓</div>
             <span class="eyebrow">SUBMITTED</span>
             <h2>ส่งคำขอเรียบร้อยแล้ว</h2>
@@ -61,7 +57,8 @@
                        Color="Color.Primary">
                 กลับหน้าแรก
             </MudButton>
-        </section>
+        </MudPaper>
+        </div>
     }
     else
     {
@@ -83,7 +80,7 @@
                   OnSubmit="HandleSubmitAsync"
                   class="application-form"
                   novalidate>
-            <section class="form-section" aria-labelledby="student-section-title">
+            <MudPaper Outlined="true" Class="form-section" aria-labelledby="student-section-title">
                 <div class="section-heading">
                     <span class="section-number">01</span>
                     <div>
@@ -128,9 +125,9 @@
                         <ValidationMessage For="@(() => _model.Email)" />
                     </div>
                 </div>
-            </section>
+            </MudPaper>
 
-            <section class="form-section" aria-labelledby="education-section-title">
+            <MudPaper Outlined="true" Class="form-section" aria-labelledby="education-section-title">
                 <div class="section-heading">
                     <span class="section-number">02</span>
                     <div>
@@ -161,12 +158,11 @@
                         {
                             <span class="field-hint error-text" role="alert">@_academicSearchError</span>
                         }
-                        <label class="inline-option">
-                            <input type="checkbox"
-                                   checked="@_useOtherFaculty"
-                                   @onchange="HandleOtherFacultyChanged" />
-                            ไม่พบหน่วยงานในรายการ ต้องการกรอกเอง
-                        </label>
+                        <MudCheckBox T="bool"
+                                     Value="_useOtherFaculty"
+                                     ValueChanged="HandleOtherFacultyChanged"
+                                     Label="ไม่พบหน่วยงานในรายการ ต้องการกรอกเอง"
+                                     Color="Color.Primary" />
                         @if (_useOtherFaculty)
                         {
                             <InputText id="faculty-other"
@@ -192,22 +188,10 @@
 
                     <fieldset class="field full-width year-fieldset">
                         <legend>ชั้นปี <span aria-hidden="true">*</span></legend>
-                        <div class="mode-options">
-                            <label>
-                                <input type="radio"
-                                       name="year-mode"
-                                       checked="@(!_useOtherYear)"
-                                       @onchange="_ => SetYearMode(false)" />
-                                ชั้นปี 1–6
-                            </label>
-                            <label>
-                                <input type="radio"
-                                       name="year-mode"
-                                       checked="@_useOtherYear"
-                                       @onchange="_ => SetYearMode(true)" />
-                                อื่น ๆ / เกินแผน
-                            </label>
-                        </div>
+                        <MudRadioGroup T="bool" @bind-Value="YearMode" Class="mode-options">
+                            <MudRadio T="bool" Value="false" Color="Color.Primary">ชั้นปี 1–6</MudRadio>
+                            <MudRadio T="bool" Value="true" Color="Color.Primary">อื่น ๆ / เกินแผน</MudRadio>
+                        </MudRadioGroup>
                         @if (_useOtherYear)
                         {
                             <InputText id="year-other"
@@ -249,9 +233,9 @@
                         <ValidationMessage For="@(() => _model.Gpax)" />
                     </div>
                 </div>
-            </section>
+            </MudPaper>
 
-            <section class="form-section" aria-labelledby="fund-section-title">
+            <MudPaper Outlined="true" Class="form-section" aria-labelledby="fund-section-title">
                 <div class="section-heading">
                     <span class="section-number">03</span>
                     <div>
@@ -299,12 +283,11 @@
                                        inputmode="numeric"
                                        autocomplete="off"
                                        aria-required="true" />
-                            <button type="button"
-                                    class="reveal-button"
-                                    @onclick="ToggleBankVisibility"
-                                    aria-label="@BankToggleLabel">
-                                @(_showBankAccount ? "ซ่อน" : "แสดง")
-                            </button>
+                            <MudIconButton Icon="@(_showBankAccount ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                                           Color="Color.Primary"
+                                           OnClick="ToggleBankVisibility"
+                                           Class="reveal-button"
+                                           aria-label="@BankToggleLabel" />
                         </div>
                         <span class="field-hint">ใช้ตัวเลข ช่องว่าง หรือเครื่องหมายขีด รวมตัวเลข 6–30 หลัก</span>
                         <ValidationMessage For="@(() => _model.BankAccountNumber)" />
@@ -334,9 +317,9 @@
                         }
                     </div>
                 </div>
-            </section>
+            </MudPaper>
 
-            <section class="form-section" aria-labelledby="reason-section-title">
+            <MudPaper Outlined="true" Class="form-section" aria-labelledby="reason-section-title">
                 <div class="section-heading">
                     <span class="section-number">04</span>
                     <div>
@@ -357,21 +340,22 @@
                     <ValidationMessage For="@(() => _model.Reason)" />
                 </div>
 
-                <div class="pdpa-notice" aria-labelledby="pdpa-title">
+                <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="pdpa-notice" aria-labelledby="pdpa-title">
                     <div class="pdpa-heading">
                         <h3 id="pdpa-title">ประกาศความเป็นส่วนตัว</h3>
                         <span>ฉบับ @_pdpaNotice!.Version</span>
                     </div>
                     <p>@_pdpaNotice.Content</p>
-                </div>
+                </MudAlert>
 
-                <label class="consent-option">
-                    <InputCheckbox @bind-Value="_model.PdpaConsent"
-                                   aria-required="true" />
-                    <span>ข้าพเจ้าได้อ่านและยอมรับเงื่อนไขการประมวลผลข้อมูลส่วนบุคคล <span aria-hidden="true">*</span></span>
-                </label>
+                <MudCheckBox T="bool"
+                             @bind-Value="_model.PdpaConsent"
+                             For="@(() => _model.PdpaConsent)"
+                             Color="Color.Primary"
+                             Label="ข้าพเจ้าได้อ่านและยอมรับเงื่อนไขการประมวลผลข้อมูลส่วนบุคคล *"
+                             Class="consent-option" />
                 <ValidationMessage For="@(() => _model.PdpaConsent)" />
-            </section>
+            </MudPaper>
 
             <div class="submit-panel">
                 <div>
@@ -400,4 +384,4 @@
             </div>
         </EditForm>
     }
-</div>
+</MudContainer>

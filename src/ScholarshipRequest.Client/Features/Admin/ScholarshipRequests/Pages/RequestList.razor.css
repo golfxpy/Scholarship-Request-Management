@@ -1,411 +1,105 @@
-.request-list-page {
-    width: min(100%, 1280px);
-    margin: 0 auto;
-}
-
 .page-header {
     display: flex;
-    margin-bottom: 1.25rem;
-    align-items: flex-end;
+    margin-bottom: 1.5rem;
+    align-items: end;
     justify-content: space-between;
     gap: 1rem;
 }
 
-.eyebrow {
-    color: #155e8a;
-    font-size: .72rem;
-    font-weight: 800;
-    letter-spacing: .12em;
-}
-
-.page-header h1 {
-    margin: .25rem 0 .35rem;
-    color: #17324d;
-    font-size: clamp(1.65rem, 4vw, 2.35rem);
-}
-
-.page-header p,
-.result-summary p {
-    margin: 0;
-    color: #516678;
-}
-
-.create-link {
-    display: inline-flex;
-    min-height: 2.65rem;
-    padding: .55rem .85rem;
-    align-items: center;
-    border-radius: 8px;
-    color: #fff;
-    background: #155e8a;
-    text-decoration: none;
-    font-weight: 800;
-    white-space: nowrap;
-}
-
-.create-link:focus-visible {
-    outline: 3px solid #78bce3;
-    outline-offset: 2px;
+::deep .filters-panel {
+    padding: 1rem;
 }
 
 .filters {
     display: grid;
-    padding: 1rem;
-    grid-template-columns: minmax(15rem, 2fr) minmax(10rem, 1fr) minmax(13rem, 1.2fr) auto;
-    gap: .85rem;
-    align-items: end;
-    border: 1px solid #d5e1e9;
-    border-radius: 12px;
-    background: #fff;
-}
-
-.filter-field {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: .35rem;
-}
-
-.filter-field label {
-    color: #334f65;
-    font-size: .82rem;
-    font-weight: 700;
-}
-
-.filter-field input,
-.filter-field select {
-    width: 100%;
-    min-height: 2.65rem;
-    padding: .55rem .65rem;
-    border: 1px solid #aebfcb;
-    border-radius: 8px;
-    color: #17324d;
-    background: #fff;
-}
-
-.filter-field input:focus,
-.filter-field select:focus,
-.filters button:focus-visible,
-.pagination button:focus-visible,
-.detail-link:focus-visible {
-    outline: 3px solid #78bce3;
-    outline-offset: 2px;
+    grid-template-columns: minmax(260px, 2fr) minmax(160px, 1fr) minmax(190px, 1fr) auto;
+    gap: .75rem;
+    align-items: center;
 }
 
 .filter-actions {
-    display: flex;
-    gap: .5rem;
-}
-
-.filters button,
-.state-card button,
-.pagination button {
-    min-height: 2.65rem;
-    padding: .55rem .8rem;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.primary-action {
-    border: 1px solid #155e8a;
-    color: #fff;
-    background: #155e8a;
-}
-
-.secondary-action,
-.pagination button,
-.state-card button {
-    border: 1px solid #aebfcb;
-    color: #26465f;
-    background: #fff;
-}
-
-button:disabled,
-select:disabled {
-    opacity: .55;
-    cursor: not-allowed;
+    white-space: nowrap;
 }
 
 .result-summary {
-    display: flex;
-    min-height: 2.75rem;
-    padding: .85rem .15rem .55rem;
-    align-items: center;
-    justify-content: space-between;
+    min-height: 3.5rem;
+    padding: .5rem .25rem;
 }
 
-.result-summary span {
-    color: #155e8a;
-    font-size: .82rem;
-    font-weight: 700;
-}
-
-.desktop-table-wrap {
-    overflow-x: auto;
-    border: 1px solid #d5e1e9;
-    border-radius: 12px;
-    background: #fff;
-}
-
-table {
-    width: 100%;
-    min-width: 980px;
-    border-collapse: collapse;
-}
-
-th,
-td {
-    padding: .85rem .75rem;
-    border-bottom: 1px solid #e2e9ee;
-    color: #263f55;
-    text-align: left;
-    vertical-align: top;
-}
-
-th {
-    color: #435d71;
-    background: #f4f7fa;
-    font-size: .78rem;
-    letter-spacing: .02em;
-}
-
-tbody tr:last-child td {
-    border-bottom: 0;
+::deep .request-table-panel {
+    overflow: hidden;
 }
 
 .student-name,
-td small {
+.student-name + small {
     display: block;
 }
 
-td small {
-    margin-top: .18rem;
-    color: #516678;
+.student-name + small {
+    color: var(--mud-palette-text-secondary);
 }
 
-.number-column {
-    text-align: right;
-    white-space: nowrap;
+::deep .status-pending {
+    color: var(--mud-palette-warning-darken) !important;
+    border-color: var(--mud-palette-warning) !important;
+    background: var(--mud-palette-warning-hover) !important;
 }
 
-.status-badge {
-    display: inline-flex;
-    padding: .3rem .55rem;
-    border-radius: 999px;
-    font-size: .78rem;
-    font-weight: 800;
-    white-space: nowrap;
+::deep .status-approved {
+    color: var(--mud-palette-success-darken) !important;
+    border-color: var(--mud-palette-success) !important;
+    background: var(--mud-palette-success-hover) !important;
 }
 
-.status-pending {
-    color: #775306;
-    background: #fff4cf;
+::deep .status-rejected {
+    color: var(--mud-palette-error-darken) !important;
+    border-color: var(--mud-palette-error) !important;
+    background: var(--mud-palette-error-hover) !important;
 }
 
-.status-approved {
-    color: #1d6845;
-    background: #ddf4e8;
-}
-
-.status-rejected {
-    color: #8a2923;
-    background: #fde5e3;
-}
-
-.detail-link {
-    color: #0e567f;
-    font-weight: 800;
-    white-space: nowrap;
-}
-
-.state-card {
+::deep .state-card {
     display: grid;
-    min-height: 15rem;
+    min-height: 16rem;
     margin-top: 1rem;
     padding: 2rem;
     place-items: center;
     align-content: center;
-    border: 1px solid #d5e1e9;
-    border-radius: 12px;
+    gap: .75rem;
     text-align: center;
-    background: #fff;
-}
-
-.state-card h2,
-.state-card p {
-    margin: .25rem 0;
-}
-
-.state-card h2 {
-    color: #263f55;
-    font-size: 1.15rem;
-}
-
-.state-card p {
-    color: #516678;
-}
-
-.state-card button {
-    margin-top: .75rem;
-}
-
-.error-state {
-    border-color: #e5b5b1;
-    background: #fff7f6;
-}
-
-.spinner {
-    width: 2rem;
-    height: 2rem;
-    border: 3px solid #d3e3ed;
-    border-top-color: #155e8a;
-    border-radius: 50%;
-    animation: spin .8s linear infinite;
-}
-
-.mobile-cards {
-    display: none;
 }
 
 .pagination {
-    display: flex;
-    margin-top: 1rem;
-    align-items: center;
-    justify-content: flex-end;
-    gap: .75rem;
-    color: #435d71;
+    padding: 1.5rem 0;
 }
 
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .spinner { animation: none; }
-}
-
-@media (max-width: 1050px) {
+@media (max-width: 1100px) {
     .filters {
         grid-template-columns: 1fr 1fr;
     }
 
-    .search-field {
+    .search-field,
+    .filter-actions {
         grid-column: 1 / -1;
     }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 600px) {
     .page-header {
         align-items: stretch;
         flex-direction: column;
-    }
-
-    .create-link {
-        justify-content: center;
     }
 
     .filters {
         grid-template-columns: 1fr;
     }
 
-    .search-field {
+    .search-field,
+    .filter-actions {
         grid-column: auto;
     }
 
-    .filter-actions button {
-        flex: 1;
-    }
-
-    .desktop-table-wrap {
-        display: none;
-    }
-
-    .mobile-cards {
-        display: grid;
-        gap: .75rem;
-    }
-
-    .request-card {
-        padding: 1rem;
-        border: 1px solid #d5e1e9;
-        border-radius: 12px;
-        background: #fff;
-    }
-
-    .card-heading {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: .75rem;
-        color: #17324d;
-    }
-
-    .request-card h2 {
-        margin: .85rem 0 .15rem;
-        color: #263f55;
-        font-size: 1.05rem;
-    }
-
-    .student-id {
-        margin: 0;
-        color: #516678;
-        font-size: .85rem;
-    }
-
-    .request-card dl {
-        margin: .85rem 0;
-    }
-
-    .request-card dl div {
-        display: grid;
-        padding: .3rem 0;
-        grid-template-columns: 6rem 1fr;
-        gap: .5rem;
-    }
-
-    .request-card dt {
-        color: #516678;
-        font-size: .82rem;
-    }
-
-    .request-card dd {
-        margin: 0;
-        color: #263f55;
-    }
-
-    .pagination {
-        justify-content: space-between;
-    }
-}
-
-@media (max-width: 420px) {
     .filter-actions {
+        align-items: stretch;
         flex-direction: column;
-    }
-
-    .pagination {
-        flex-wrap: wrap;
-    }
-
-    .pagination button {
-        flex: 1;
-    }
-
-    .pagination span {
-        order: -1;
-        width: 100%;
-        text-align: center;
     }
 }

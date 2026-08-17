@@ -5,6 +5,7 @@ namespace ScholarshipRequest.Client.Layout;
 
 public partial class AdminLayout
 {
+    private bool _drawerOpen = true;
     private bool _loggingOut;
     private string? _logoutError;
 
@@ -18,6 +19,8 @@ public partial class AdminLayout
         AuthenticationProvider.CurrentSession?.FullName ??
         AuthenticationProvider.CurrentSession?.UserName ??
         "เจ้าหน้าที่";
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
 
     private async Task LogoutAsync()
     {

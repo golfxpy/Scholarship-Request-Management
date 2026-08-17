@@ -6,50 +6,52 @@
 <PageTitle>รายละเอียดคำขอทุน</PageTitle>
 
 <section class="detail-page" aria-labelledby="detail-title" aria-busy="@_loading">
-    <a class="back-link" href="@BackUrl">← กลับรายการคำขอ</a>
+    <MudButton Href="@BackUrl" Variant="Variant.Text" Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.ArrowBack" Class="back-link">กลับรายการคำขอ</MudButton>
 
     @if (_loading)
     {
-        <div class="state-card" role="status">
-            <span class="spinner" aria-hidden="true"></span>
-            <p>กำลังโหลดรายละเอียดคำขอ...</p>
-        </div>
+        <MudPaper Outlined="true" Class="state-card" role="status">
+            <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+            <MudText>กำลังโหลดรายละเอียดคำขอ...</MudText>
+        </MudPaper>
     }
     else if (_error is not null)
     {
-        <div class="state-card error-state" role="alert">
-            <h1 id="detail-title">@(_error.StatusCode == 404 ? "ไม่พบคำขอทุน" : _error.Title)</h1>
-            <p>@(_error.Detail ?? "กรุณาลองอีกครั้ง")</p>
+        <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="state-card">
+            <MudText Typo="Typo.h5" id="detail-title">@(_error.StatusCode == 404 ? "ไม่พบคำขอทุน" : _error.Title)</MudText>
+            <MudText>@(_error.Detail ?? "กรุณาลองอีกครั้ง")</MudText>
             @if (_error.StatusCode != 404)
             {
-                <button type="button" @onclick="LoadAsync">ลองอีกครั้ง</button>
+                <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="LoadAsync"
+                           StartIcon="@Icons.Material.Filled.Refresh">ลองอีกครั้ง</MudButton>
             }
-        </div>
+        </MudAlert>
     }
     else if (_detail is not null)
     {
         <header class="detail-header">
             <div>
-                <span class="eyebrow">REQUEST DETAIL</span>
-                <h1 id="detail-title">@_detail.RequestNumber</h1>
-                <p>ยื่นเมื่อ @FormatDate(_detail.SubmittedAt)</p>
+                <MudText Typo="Typo.overline" Color="Color.Primary">REQUEST DETAIL</MudText>
+                <MudText Typo="Typo.h3" id="detail-title">@_detail.RequestNumber</MudText>
+                <MudText Typo="Typo.body2" Class="muted-text">ยื่นเมื่อ @FormatDate(_detail.SubmittedAt)</MudText>
             </div>
-            <span class="status-badge @StatusClass(_detail.Status)">@StatusLabel(_detail.Status)</span>
+            <MudChip T="string" Variant="Variant.Outlined" Class="@StatusClass(_detail.Status)">@StatusLabel(_detail.Status)</MudChip>
         </header>
 
         @if (!_detail.CanEdit)
         {
-            <div class="final-notice" role="status">
-                <strong>คำขอนี้สิ้นสุดการพิจารณาแล้ว</strong>
-                <span>สถานะ Approved/Rejected เป็นข้อมูลอ่านอย่างเดียวและไม่สามารถเปิดกลับได้</span>
-            </div>
+            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mb-4">
+                <strong>คำขอนี้สิ้นสุดการพิจารณาแล้ว</strong><br />
+                สถานะ Approved/Rejected เป็นข้อมูลอ่านอย่างเดียวและไม่สามารถเปิดกลับได้
+            </MudAlert>
         }
         else
         {
-            <div class="pending-notice" role="status">
-                <strong>คำขอนี้รอพิจารณา</strong>
-                <span>สามารถแก้ไข ลบ อนุมัติ หรือปฏิเสธได้ในขั้นตอนจัดการคำขอ</span>
-            </div>
+            <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Class="mb-4">
+                <strong>คำขอนี้รอพิจารณา</strong><br />
+                สามารถแก้ไข ลบ อนุมัติ หรือปฏิเสธได้ในขั้นตอนจัดการคำขอ
+            </MudAlert>
 
             <section class="request-actions" aria-labelledby="request-actions-title">
                 <div>
@@ -57,48 +59,41 @@
                     <p>ตรวจสอบข้อมูลให้ครบก่อนอนุมัติหรือปฏิเสธ</p>
                 </div>
                 <div class="action-buttons">
-                    <a href="@EditUrl">แก้ไข</a>
-                    <button class="approve-button" type="button" @onclick='() => OpenAction("Approved")'>อนุมัติ</button>
-                    <button class="reject-button" type="button" @onclick='() => OpenAction("Rejected")'>ปฏิเสธ</button>
-                    <button class="delete-button" type="button" @onclick='() => OpenAction("Delete")'>ลบคำขอ</button>
+                    <MudButton Href="@EditUrl" Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit">แก้ไข</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Filled.Check" OnClick='() => OpenAction("Approved")'>อนุมัติ</MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Close" OnClick='() => OpenAction("Rejected")'>ปฏิเสธ</MudButton>
+                    <MudButton Variant="Variant.Text" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick='() => OpenAction("Delete")'>ลบคำขอ</MudButton>
                 </div>
             </section>
 
             @if (_activeAction is not null)
             {
-                <section class="action-panel" role="dialog" aria-modal="true" aria-labelledby="action-panel-title">
+                <MudPaper Outlined="true" Class="action-panel" role="dialog" aria-modal="true" aria-labelledby="action-panel-title">
                     <h2 id="action-panel-title">@ActionTitle</h2>
                     <p>@ActionDescription</p>
                     @if (_activeAction is "Approved" or "Rejected")
                     {
-                        <label for="decision-note">
-                            หมายเหตุ @if (_activeAction == "Rejected") { <span>(จำเป็น)</span> }
-                        </label>
-                        <textarea id="decision-note"
-                                  maxlength="2000"
-                                  rows="4"
-                                  @bind="_decisionNote"
-                                  @bind:event="oninput"></textarea>
+                        <MudTextField T="string" Label="@(_activeAction == "Rejected" ? "หมายเหตุ (จำเป็น)" : "หมายเหตุ")"
+                                      Lines="4" MaxLength="2000" Immediate="true" Variant="Variant.Outlined"
+                                      @bind-Value="_decisionNote" />
                     }
                     @if (!string.IsNullOrWhiteSpace(_actionError))
                     {
-                        <div class="action-error" role="alert">@_actionError</div>
+                        <MudAlert Severity="Severity.Error" Variant="Variant.Text">@_actionError</MudAlert>
                     }
                     <div class="panel-actions">
-                        <button type="button" disabled="@_actionSubmitting" @onclick="CloseAction">ยกเลิก</button>
-                        <button class="confirm-action"
-                                type="button"
-                                disabled="@_actionSubmitting"
-                                @onclick="SubmitActionAsync">
+                        <MudButton Variant="Variant.Text" Disabled="_actionSubmitting" OnClick="CloseAction">ยกเลิก</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="@(_activeAction == "Approved" ? Color.Success : Color.Error)"
+                                Disabled="_actionSubmitting" OnClick="SubmitActionAsync">
                             @(_actionSubmitting ? "กำลังดำเนินการ..." : ConfirmActionLabel)
-                        </button>
+                        </MudButton>
                     </div>
-                </section>
+                </MudPaper>
             }
         }
 
         <div class="detail-grid">
-            <section class="detail-card" aria-labelledby="student-section-title">
+            <MudPaper Outlined="true" Class="detail-card" aria-labelledby="student-section-title">
                 <h2 id="student-section-title">ข้อมูลนักศึกษา</h2>
                 <dl>
                     <div><dt>รหัสนักศึกษา</dt><dd>@_detail.StudentId</dd></div>
@@ -109,9 +104,9 @@
                     <div><dt>GPAX</dt><dd>@_detail.Gpax.ToString("0.00")</dd></div>
                     <div><dt>อีเมล</dt><dd class="break-value">@_detail.Email</dd></div>
                 </dl>
-            </section>
+            </MudPaper>
 
-            <section class="detail-card" aria-labelledby="funding-section-title">
+            <MudPaper Outlined="true" Class="detail-card" aria-labelledby="funding-section-title">
                 <h2 id="funding-section-title">ข้อมูลทุนและการเงิน</h2>
                 <dl>
                     <div><dt>ประเภททุน</dt><dd>@_detail.ScholarshipTypeName</dd></div>
@@ -120,9 +115,9 @@
                 </dl>
                 <h3>เหตุผลในการขอทุน</h3>
                 <p class="long-text">@_detail.Reason</p>
-            </section>
+            </MudPaper>
 
-            <section class="detail-card" aria-labelledby="consent-section-title">
+            <MudPaper Outlined="true" Class="detail-card" aria-labelledby="consent-section-title">
                 <h2 id="consent-section-title">การรับทราบและความยินยอม</h2>
                 <dl>
                     <div><dt>แหล่งคำขอ</dt><dd>@SourceLabel(_detail.SubmissionSource)</dd></div>
@@ -139,9 +134,9 @@
                     <h3>หลักฐาน/บันทึกประกอบ consent</h3>
                     <p class="long-text">@_detail.ConsentEvidenceNote</p>
                 }
-            </section>
+            </MudPaper>
 
-            <section class="detail-card" aria-labelledby="decision-section-title">
+            <MudPaper Outlined="true" Class="detail-card" aria-labelledby="decision-section-title">
                 <h2 id="decision-section-title">ผลการพิจารณา</h2>
                 @if (_detail.Status == "Pending")
                 {
@@ -157,7 +152,7 @@
                     <h3>หมายเหตุ</h3>
                     <p class="long-text">@DisplayValue(_detail.DecisionNote)</p>
                 }
-            </section>
+            </MudPaper>
         </div>
 
         <p class="updated-at">ปรับปรุงข้อมูลล่าสุด @FormatDate(_detail.UpdatedAt)</p>

@@ -53,17 +53,17 @@
     white-space: nowrap;
 }
 
-.status-pending {
+::deep .status-pending {
     color: #775306;
     background: #fff4cf;
 }
 
-.status-approved {
+::deep .status-approved {
     color: #1d6845;
     background: #ddf4e8;
 }
 
-.status-rejected {
+::deep .status-rejected {
     color: #8a2923;
     background: #fde5e3;
 }
@@ -145,7 +145,7 @@
     background: #fff;
 }
 
-.action-panel {
+::deep .action-panel {
     margin-bottom: 1rem;
     padding: 1rem;
     border: 2px solid #6d91a8;
@@ -245,7 +245,7 @@
     gap: 1rem;
 }
 
-.detail-card {
+::deep .detail-card {
     min-width: 0;
     padding: 1.2rem;
     border: 1px solid #d5e1e9;
@@ -311,7 +311,7 @@
     font-size: .78rem;
 }
 
-.state-card {
+::deep .state-card {
     display: grid;
     min-height: 18rem;
     padding: 2rem;

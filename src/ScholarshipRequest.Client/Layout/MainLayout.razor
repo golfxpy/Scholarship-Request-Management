@@ -6,39 +6,45 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
+<div class="main-layout-host">
 <MudLayout>
     <MudAppBar Elevation="0" Class="app-header">
-        <a class="brand-link" href="/" aria-label="ระบบจัดการคำขอทุนการศึกษา หน้าแรก">
+        <MudLink Class="brand-link" Href="/" Underline="Underline.None" aria-label="ระบบจัดการคำขอทุนการศึกษา หน้าแรก">
             <span class="brand-mark" aria-hidden="true">S</span>
             <span>
                 <strong>Scholarship Request</strong>
                 <small>ระบบจัดการคำขอทุนการศึกษา</small>
             </span>
-        </a>
+        </MudLink>
 
         <MudSpacer />
 
-        <nav class="header-nav" aria-label="เมนูหลัก">
-            <a class="nav-link home-nav" href="/">หน้าแรก</a>
-            <a class="nav-link staff-nav" href="/admin/login" aria-label="เข้าสู่ระบบเจ้าหน้าที่">
+        <div class="header-nav" role="navigation" aria-label="เมนูหลัก">
+            <MudButton Class="home-nav" Href="/" Variant="Variant.Text" Color="Color.Inherit">หน้าแรก</MudButton>
+            <MudButton Class="staff-nav" Href="/admin/login" Variant="Variant.Text" Color="Color.Inherit"
+                       StartIcon="@Icons.Material.Filled.Badge" aria-label="เข้าสู่ระบบเจ้าหน้าที่">
                 <span class="staff-desktop-label">สำหรับเจ้าหน้าที่</span>
                 <span class="staff-mobile-label" aria-hidden="true">เจ้าหน้าที่</span>
-            </a>
-            <a class="nav-link apply-nav" href="/apply" aria-label="ยื่นคำขอทุน">
+            </MudButton>
+            <MudButton Class="apply-nav" Href="/apply" Variant="Variant.Filled" Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.EditNote" aria-label="ยื่นคำขอทุน">
                 <span class="desktop-label">ยื่นคำขอทุน</span>
                 <span class="mobile-label" aria-hidden="true">ยื่นคำขอ</span>
-            </a>
-        </nav>
+            </MudButton>
+        </div>
     </MudAppBar>
 
     <MudMainContent Class="main-content">
         @Body
-        <footer class="site-footer">
-            <div>
-                <strong>Scholarship Request Management</strong>
-                <span>ระบบต้นแบบสำหรับจัดการคำขอทุนการศึกษา</span>
-            </div>
-            <span>POC · วิทยาเขตหาดใหญ่</span>
-        </footer>
+        <MudContainer MaxWidth="MaxWidth.Large">
+            <footer class="site-footer">
+                <div>
+                    <strong>Scholarship Request Management</strong>
+                    <span>ระบบต้นแบบสำหรับจัดการคำขอทุนการศึกษา</span>
+                </div>
+                <span>POC · วิทยาเขตหาดใหญ่</span>
+            </footer>
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
+</div>

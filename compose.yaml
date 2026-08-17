@@ -3,6 +3,8 @@ name: scholarship-request-management
 services:
   db:
     image: postgres:18.4
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-scholarship}
       POSTGRES_USER: ${POSTGRES_USER:-scholarship}

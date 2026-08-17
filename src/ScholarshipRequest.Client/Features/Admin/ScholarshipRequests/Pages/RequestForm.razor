@@ -7,7 +7,10 @@
 <PageTitle>@(IsEdit ? "แก้ไขคำขอทุน" : "เพิ่มคำขอแทนนักศึกษา")</PageTitle>
 
 <section class="request-form-page" aria-labelledby="request-form-title" aria-busy="@_loading">
-    <a class="back-link" href="@BackUrl">← @(IsEdit ? "กลับรายละเอียดคำขอ" : "กลับรายการคำขอ")</a>
+    <MudButton Href="@BackUrl" Variant="Variant.Text" Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.ArrowBack" Class="back-link">
+        @(IsEdit ? "กลับรายละเอียดคำขอ" : "กลับรายการคำขอ")
+    </MudButton>
 
     <header>
         <span class="eyebrow">@(IsEdit ? "EDIT REQUEST" : "STAFF SUBMISSION")</span>
@@ -19,15 +22,19 @@
 
     @if (_loading)
     {
-        <div class="state-card" role="status">กำลังเตรียมแบบฟอร์ม...</div>
+        <MudPaper Outlined="true" Class="state-card" role="status">
+            <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+            <MudText>กำลังเตรียมแบบฟอร์ม...</MudText>
+        </MudPaper>
     }
     else if (_loadError is not null)
     {
-        <div class="state-card error-state" role="alert">
+        <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="state-card">
             <h2>@_loadError.Title</h2>
             <p>@(_loadError.Detail ?? "กรุณาลองอีกครั้ง")</p>
-            <button type="button" @onclick="LoadAsync">ลองอีกครั้ง</button>
-        </div>
+            <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="LoadAsync"
+                       StartIcon="@Icons.Material.Filled.Refresh">ลองอีกครั้ง</MudButton>
+        </MudAlert>
     }
     else
     {
@@ -36,7 +43,8 @@
 
             @if (_serverError is not null)
             {
-                <div class="server-error" role="alert" tabindex="-1" @ref="_errorSummary">
+                <div tabindex="-1" @ref="_errorSummary">
+                <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="server-error">
                     <strong>@_serverError.Title</strong>
                     <span>@(_serverError.Detail ?? "กรุณาตรวจสอบข้อมูลแล้วลองอีกครั้ง")</span>
                     @if (_serverError.FieldErrors.Count > 0)
@@ -48,6 +56,7 @@
                             }
                         </ul>
                     }
+                </MudAlert>
                 </div>
             }
 
@@ -55,7 +64,7 @@
                 <ValidationSummary />
             </div>
 
-            <section class="form-card" aria-labelledby="student-form-section">
+            <MudPaper Outlined="true" Class="form-card" aria-labelledby="student-form-section">
                 <h2 id="student-form-section">ข้อมูลนักศึกษา</h2>
                 <div class="form-grid">
                     <div class="field">
@@ -127,9 +136,9 @@
                         <ValidationMessage For="() => _model.Email" />
                     </div>
                 </div>
-            </section>
+            </MudPaper>
 
-            <section class="form-card" aria-labelledby="funding-form-section">
+            <MudPaper Outlined="true" Class="form-card" aria-labelledby="funding-form-section">
                 <h2 id="funding-form-section">ข้อมูลทุนและการเงิน</h2>
                 <div class="form-grid">
                     <div class="field">
@@ -178,11 +187,11 @@
                         <ValidationMessage For="() => _model.Reason" />
                     </div>
                 </div>
-            </section>
+            </MudPaper>
 
             @if (!IsEdit && _pdpaNotice is not null)
             {
-                <section class="form-card consent-card" aria-labelledby="consent-form-section">
+                <MudPaper Outlined="true" Class="form-card consent-card" aria-labelledby="consent-form-section">
                     <h2 id="consent-form-section">หลักฐาน consent</h2>
                     <p class="consent-intro">
                         เจ้าหน้าที่ต้องยืนยันว่าได้รับ consent จากนักศึกษา ไม่ใช่ให้ consent แทนนักศึกษา
@@ -210,14 +219,15 @@
                             <ValidationMessage For="() => _model.ConsentEvidenceNote" />
                         </div>
                     </div>
-                </section>
+                </MudPaper>
             }
 
             <div class="form-actions">
-                <a href="@BackUrl">ยกเลิก</a>
-                <button type="submit" disabled="@_submitting">
+                <MudButton Href="@BackUrl" Variant="Variant.Text" Color="Color.Default">ยกเลิก</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Disabled="_submitting"
+                           StartIcon="@(_submitting ? null : Icons.Material.Filled.Save)">
                     @(_submitting ? "กำลังบันทึก..." : IsEdit ? "บันทึกการแก้ไข" : "สร้างคำขอ")
-                </button>
+                </MudButton>
             </div>
         </EditForm>
     }

@@ -4,22 +4,24 @@
 
 <PageTitle>เข้าสู่ระบบเจ้าหน้าที่</PageTitle>
 
-<section class="login-page" aria-labelledby="login-title">
-    <MudPaper Class="login-card" Elevation="1">
-        <div class="login-heading">
-            <span class="login-mark" aria-hidden="true">S</span>
+<MudContainer MaxWidth="MaxWidth.Small" Class="login-page">
+    <MudPaper Class="login-card" Outlined="true">
+        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Class="login-heading">
+            <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Size="Size.Large">S</MudAvatar>
             <div>
-                <span class="login-eyebrow">STAFF PORTAL</span>
-                <h1 id="login-title">เข้าสู่ระบบเจ้าหน้าที่</h1>
-                <p>จัดการและพิจารณาคำขอทุนการศึกษา</p>
+                <MudText Typo="Typo.overline" Color="Color.Primary">STAFF PORTAL</MudText>
+                <MudText Typo="Typo.h4" id="login-title">เข้าสู่ระบบเจ้าหน้าที่</MudText>
+                <MudText Typo="Typo.body2" Class="muted-text">จัดการและพิจารณาคำขอทุนการศึกษา</MudText>
             </div>
-        </div>
+        </MudStack>
 
         @if (!string.IsNullOrWhiteSpace(_errorMessage))
         {
-            <div class="login-error" role="alert" tabindex="-1" @ref="_errorSummary">
-                <strong>เข้าสู่ระบบไม่สำเร็จ</strong>
-                <span>@_errorMessage</span>
+            <div tabindex="-1" @ref="_errorSummary">
+                <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="login-error">
+                    <MudText Typo="Typo.subtitle2">เข้าสู่ระบบไม่สำเร็จ</MudText>
+                    <MudText Typo="Typo.body2">@_errorMessage</MudText>
+                </MudAlert>
             </div>
         }
 
@@ -37,59 +39,61 @@
                 <ValidationSummary class="validation-summary" />
             </div>
 
-            <div class="form-field">
-                <label for="staff-username">ชื่อผู้ใช้</label>
-                <input id="staff-username"
-                       class="text-input"
-                       @bind="_model.UserName"
-                       @bind:event="oninput"
-                       autocomplete="username"
-                       maxlength="100"
-                       aria-required="true"
-                       disabled="@_submitting" />
-                <ValidationMessage For="@(() => _model.UserName)" />
-            </div>
+            <MudTextField T="string"
+                          Label="ชื่อผู้ใช้"
+                          @bind-Value="_model.UserName"
+                          Immediate="true"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Normal"
+                          autocomplete="username"
+                          MaxLength="100"
+                          Disabled="_submitting"
+                          Required="true"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Person" />
+            <ValidationMessage For="@(() => _model.UserName)" />
 
-            <div class="form-field">
-                <label for="staff-password">รหัสผ่าน</label>
-                <div class="password-field">
-                    <input id="staff-password"
-                           class="text-input"
-                           type="@(_showPassword ? "text" : "password")"
-                           @bind="_model.Password"
-                           @bind:event="oninput"
-                           autocomplete="current-password"
-                           maxlength="200"
-                           aria-required="true"
-                           disabled="@_submitting" />
-                    <button type="button"
-                            class="password-toggle"
-                            aria-label="@(_showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน")"
-                            aria-pressed="@_showPassword.ToString().ToLowerInvariant()"
-                            disabled="@_submitting"
-                            @onclick="TogglePassword">
-                        @(_showPassword ? "ซ่อน" : "แสดง")
-                    </button>
-                </div>
-                <ValidationMessage For="@(() => _model.Password)" />
-            </div>
+            <MudTextField T="string"
+                          Label="รหัสผ่าน"
+                          @bind-Value="_model.Password"
+                          Immediate="true"
+                          InputType="@(_showPassword ? InputType.Text : InputType.Password)"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Normal"
+                          autocomplete="current-password"
+                          MaxLength="200"
+                          Disabled="_submitting"
+                          Required="true"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                          OnAdornmentClick="TogglePassword"
+                          AdornmentAriaLabel="@(_showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน")" />
+            <ValidationMessage For="@(() => _model.Password)" />
 
-            <button class="login-button" type="submit" disabled="@_submitting">
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       FullWidth="true"
+                       Disabled="_submitting"
+                       StartIcon="@(_submitting ? null : Icons.Material.Filled.Login)"
+                       Class="login-button">
                 @if (_submitting)
                 {
-                    <span class="button-spinner" aria-hidden="true"></span>
+                    <MudProgressCircular Indeterminate="true" Size="Size.Small" Color="Color.Inherit" Class="mr-2" />
                     <span>กำลังตรวจสอบ...</span>
                 }
                 else
                 {
                     <span>เข้าสู่ระบบ</span>
                 }
-            </button>
+            </MudButton>
         </EditForm>
 
-        <div class="login-help">
-            <a href="/">กลับไปหน้าสำหรับนักศึกษา</a>
-            <span>หากลืมรหัสผ่าน กรุณาติดต่อผู้ดูแลระบบ</span>
-        </div>
+        <MudDivider Class="my-5" />
+        <MudStack Spacing="1" Class="login-help">
+            <MudLink Href="/" Underline="Underline.Hover">กลับไปหน้าสำหรับนักศึกษา</MudLink>
+            <MudText Typo="Typo.caption" Class="muted-text">หากลืมรหัสผ่าน กรุณาติดต่อผู้ดูแลระบบ</MudText>
+        </MudStack>
     </MudPaper>
-</section>
+</MudContainer>

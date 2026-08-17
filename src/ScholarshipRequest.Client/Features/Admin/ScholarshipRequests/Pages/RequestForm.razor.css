@@ -32,7 +32,7 @@ header p {
     color: #516678;
 }
 
-.form-card {
+::deep .form-card {
     margin-bottom: 1rem;
     padding: 1.2rem;
     border: 1px solid #d5e1e9;
@@ -120,7 +120,7 @@ header p {
     display: none;
 }
 
-.server-error {
+::deep .server-error {
     display: flex;
     margin-bottom: 1rem;
     padding: .85rem 1rem;
@@ -205,7 +205,7 @@ header p {
     cursor: not-allowed;
 }
 
-.state-card {
+::deep .state-card {
     display: grid;
     min-height: 14rem;
     padding: 2rem;

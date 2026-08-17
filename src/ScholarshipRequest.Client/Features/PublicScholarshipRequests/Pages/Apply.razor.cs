@@ -160,14 +160,20 @@ public partial class Apply : IDisposable
         return Task.CompletedTask;
     }
 
-    private void HandleOtherFacultyChanged(ChangeEventArgs args)
+    private void HandleOtherFacultyChanged(bool value)
     {
-        _useOtherFaculty = args.Value is bool value && value;
+        _useOtherFaculty = value;
         _selectedAcademicUnit = null;
         _model.AcademicUnitId = null;
         _model.FacultyName = string.Empty;
         _academicSearchError = null;
         NotifyFieldChanged(nameof(_model.FacultyName));
+    }
+
+    private bool YearMode
+    {
+        get => _useOtherYear;
+        set => SetYearMode(value);
     }
 
     private void SetYearMode(bool useOtherYear)

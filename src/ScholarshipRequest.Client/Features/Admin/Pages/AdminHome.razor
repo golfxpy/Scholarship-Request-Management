@@ -6,108 +6,129 @@
 
 <section class="dashboard" aria-labelledby="dashboard-title" aria-busy="@_loading">
     <header>
-        <span class="eyebrow">STAFF DASHBOARD</span>
-        <h1 id="dashboard-title">ภาพรวมคำขอทุนการศึกษา</h1>
-        <p>ข้อมูลรวมของคำขอที่ยังไม่ถูกลบในระบบ</p>
+        <MudText Typo="Typo.overline" Color="Color.Primary">STAFF DASHBOARD</MudText>
+        <MudText Typo="Typo.h3" id="dashboard-title">ภาพรวมคำขอทุนการศึกษา</MudText>
+        <MudText Typo="Typo.body2" Class="muted-text">ข้อมูลรวมของคำขอที่ยังไม่ถูกลบในระบบ</MudText>
     </header>
 
     @if (_loading)
     {
-        <div class="state-card" role="status">กำลังโหลดแดชบอร์ด...</div>
+        <MudPaper Outlined="true" Class="state-card" role="status">
+            <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+            <MudText>กำลังโหลดแดชบอร์ด...</MudText>
+        </MudPaper>
     }
     else if (_error is not null)
     {
-        <div class="state-card error-state" role="alert">
-            <h2>@_error.Title</h2>
-            <p>@(_error.Detail ?? "กรุณาลองอีกครั้ง")</p>
-            <button type="button" @onclick="LoadAsync">ลองอีกครั้ง</button>
-        </div>
+        <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="state-card">
+            <MudText Typo="Typo.h6">@_error.Title</MudText>
+            <MudText Typo="Typo.body2">@(_error.Detail ?? "กรุณาลองอีกครั้ง")</MudText>
+            <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="LoadAsync" Class="mt-3"
+                       StartIcon="@Icons.Material.Filled.Refresh">ลองอีกครั้ง</MudButton>
+        </MudAlert>
     }
     else if (_summary is not null)
     {
-        <div class="summary-cards">
-            <a class="summary-card total-card" href="/admin/requests">
-                <span>คำขอทั้งหมด</span>
-                <strong>@_summary.TotalRequests.ToString("N0")</strong>
-                <small>รวม @FormatMoney(_summary.TotalRequestedAmount)</small>
-            </a>
-            <a class="summary-card pending-card" href="/admin/requests?status=Pending">
-                <span>รอพิจารณา</span>
-                <strong>@_summary.PendingRequests.ToString("N0")</strong>
-                <small>Pending</small>
-            </a>
-            <a class="summary-card approved-card" href="/admin/requests?status=Approved">
-                <span>อนุมัติ</span>
-                <strong>@_summary.ApprovedRequests.ToString("N0")</strong>
-                <small>Approved</small>
-            </a>
-            <a class="summary-card rejected-card" href="/admin/requests?status=Rejected">
-                <span>ปฏิเสธ</span>
-                <strong>@_summary.RejectedRequests.ToString("N0")</strong>
-                <small>Rejected</small>
-            </a>
-        </div>
+        <MudGrid Spacing="3" Class="summary-grid">
+            <MudItem xs="12" sm="6" lg="3">
+                <MudCard Outlined="true" Class="summary-card total-card">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.subtitle2">คำขอทั้งหมด</MudText>
+                            <MudIcon Icon="@Icons.Material.Filled.Assignment" Color="Color.Primary" />
+                        </MudStack>
+                        <MudText Typo="Typo.h3">@_summary.TotalRequests.ToString("N0")</MudText>
+                        <MudText Typo="Typo.caption">รวม @FormatMoney(_summary.TotalRequestedAmount)</MudText>
+                    </MudCardContent>
+                    <MudCardActions><MudButton Href="/admin/requests" Color="Color.Primary">ดูรายการ</MudButton></MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" lg="3">
+                <MudCard Outlined="true" Class="summary-card pending-card">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.subtitle2">รอพิจารณา</MudText>
+                            <MudIcon Icon="@Icons.Material.Filled.Schedule" Color="Color.Warning" />
+                        </MudStack>
+                        <MudText Typo="Typo.h3">@_summary.PendingRequests.ToString("N0")</MudText>
+                        <MudText Typo="Typo.caption">Pending</MudText>
+                    </MudCardContent>
+                    <MudCardActions><MudButton Href="/admin/requests?status=Pending" Color="Color.Warning">ดูรายการ</MudButton></MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" lg="3">
+                <MudCard Outlined="true" Class="summary-card approved-card">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.subtitle2">อนุมัติ</MudText>
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                        </MudStack>
+                        <MudText Typo="Typo.h3">@_summary.ApprovedRequests.ToString("N0")</MudText>
+                        <MudText Typo="Typo.caption">Approved</MudText>
+                    </MudCardContent>
+                    <MudCardActions><MudButton Href="/admin/requests?status=Approved" Color="Color.Success">ดูรายการ</MudButton></MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" sm="6" lg="3">
+                <MudCard Outlined="true" Class="summary-card rejected-card">
+                    <MudCardContent>
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                            <MudText Typo="Typo.subtitle2">ปฏิเสธ</MudText>
+                            <MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" />
+                        </MudStack>
+                        <MudText Typo="Typo.h3">@_summary.RejectedRequests.ToString("N0")</MudText>
+                        <MudText Typo="Typo.caption">Rejected</MudText>
+                    </MudCardContent>
+                    <MudCardActions><MudButton Href="/admin/requests?status=Rejected" Color="Color.Error">ดูรายการ</MudButton></MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
 
-        <div class="dashboard-grid">
-            <section class="dashboard-card" aria-labelledby="status-chart-title">
-                <div class="card-header">
-                    <div>
-                        <h2 id="status-chart-title">สัดส่วนตามสถานะ</h2>
-                        <p>จำนวนคำขอในแต่ละสถานะ</p>
-                    </div>
-                </div>
-                <div class="bar-chart" role="img" aria-label="กราฟจำนวนคำขอแยกตามสถานะ">
-                    @foreach (var item in StatusChartItems)
-                    {
-                        <div class="bar-row">
-                            <span>@item.Label</span>
-                            <div class="bar-track" aria-hidden="true">
-                                <div class="bar-fill @item.CssClass" style="width: @BarWidth(item.Value)%"></div>
+        <MudGrid Spacing="3" Class="dashboard-grid">
+            <MudItem xs="12" lg="5">
+                <MudPaper Outlined="true" Class="dashboard-panel">
+                    <MudText Typo="Typo.h6" id="status-chart-title">สัดส่วนตามสถานะ</MudText>
+                    <MudText Typo="Typo.body2" Class="muted-text">จำนวนคำขอในแต่ละสถานะ</MudText>
+                    <div class="bar-chart" role="img" aria-label="กราฟจำนวนคำขอแยกตามสถานะ">
+                        @foreach (var item in StatusChartItems)
+                        {
+                            <div class="bar-row">
+                                <span>@item.Label</span>
+                                <div class="bar-track" aria-hidden="true">
+                                    <div class="bar-fill @item.CssClass" style="width: @BarWidth(item.Value)%"></div>
+                                </div>
+                                <strong>@item.Value.ToString("N0")</strong>
                             </div>
-                            <strong>@item.Value.ToString("N0")</strong>
-                        </div>
-                    }
-                </div>
-            </section>
+                        }
+                    </div>
+                </MudPaper>
+            </MudItem>
 
-            <section class="dashboard-card type-summary" aria-labelledby="type-summary-title">
-                <div class="card-header">
-                    <div>
-                        <h2 id="type-summary-title">สรุปตามประเภททุน</h2>
-                        <p>จำนวนคำขอและยอดเงินที่ขอรวมทุกสถานะ</p>
-                    </div>
-                </div>
-                @if (_summary.ByScholarshipType.Count == 0)
-                {
-                    <p class="empty-text">ยังไม่มีข้อมูลประเภททุน</p>
-                }
-                else
-                {
-                    <div class="type-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th scope="col">ประเภททุน</th>
-                                    <th scope="col">จำนวนคำขอ</th>
-                                    <th scope="col">ยอดเงินรวม</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in _summary.ByScholarshipType)
-                                {
-                                    <tr>
-                                        <td>
-                                            <a href="@TypeFilterUrl(item.ScholarshipTypeId)">@item.ScholarshipTypeName</a>
-                                        </td>
-                                        <td>@item.RequestCount.ToString("N0")</td>
-                                        <td>@FormatMoney(item.TotalRequestedAmount)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </section>
-        </div>
+            <MudItem xs="12" lg="7">
+                <MudPaper Outlined="true" Class="dashboard-panel type-summary">
+                    <MudText Typo="Typo.h6" id="type-summary-title">สรุปตามประเภททุน</MudText>
+                    <MudText Typo="Typo.body2" Class="muted-text">จำนวนคำขอและยอดเงินที่ขอรวมทุกสถานะ</MudText>
+                    @if (_summary.ByScholarshipType.Count == 0)
+                    {
+                        <MudText Class="empty-text">ยังไม่มีข้อมูลประเภททุน</MudText>
+                    }
+                    else
+                    {
+                        <MudTable Items="_summary.ByScholarshipType" Dense="true" Hover="true" Class="type-table">
+                            <HeaderContent>
+                                <MudTh>ประเภททุน</MudTh>
+                                <MudTh>จำนวนคำขอ</MudTh>
+                                <MudTh>ยอดเงินรวม</MudTh>
+                            </HeaderContent>
+                            <RowTemplate Context="item">
+                                <MudTd DataLabel="ประเภททุน"><MudLink Href="@TypeFilterUrl(item.ScholarshipTypeId)">@item.ScholarshipTypeName</MudLink></MudTd>
+                                <MudTd DataLabel="จำนวนคำขอ">@item.RequestCount.ToString("N0")</MudTd>
+                                <MudTd DataLabel="ยอดเงินรวม">@FormatMoney(item.TotalRequestedAmount)</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    }
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
     }
 </section>

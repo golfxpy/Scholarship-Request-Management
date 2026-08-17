@@ -6,46 +6,73 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<div class="admin-shell">
-    <header class="admin-header">
-        <a class="admin-brand" href="/admin" aria-label="ศูนย์จัดการคำขอทุน หน้าหลักเจ้าหน้าที่">
-            <span aria-hidden="true">S</span>
-            <span>
+<div class="admin-layout-host">
+<MudLayout Class="admin-layout">
+    <MudAppBar Fixed="true" Elevation="0" Class="admin-header">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       Edge="Edge.Start"
+                       OnClick="ToggleDrawer"
+                       Class="drawer-toggle"
+                       aria-label="เปิดหรือปิดเมนูเจ้าหน้าที่" />
+        <MudLink Class="admin-brand" Href="/admin" Underline="Underline.None"
+                 aria-label="ศูนย์จัดการคำขอทุน หน้าหลักเจ้าหน้าที่">
+            <span class="admin-brand-mark" aria-hidden="true">S</span>
+            <span class="admin-brand-copy">
                 <strong>Scholarship Admin</strong>
                 <small>ศูนย์จัดการคำขอทุน</small>
             </span>
-        </a>
+        </MudLink>
 
-        <div class="staff-actions">
-            <span class="staff-name">
-                <small>เจ้าหน้าที่</small>
-                <strong>@DisplayName</strong>
-            </span>
-            <button type="button" disabled="@_loggingOut" @onclick="LogoutAsync">
-                @(_loggingOut ? "กำลังออก..." : "ออกจากระบบ")
-            </button>
-        </div>
-    </header>
+        <MudSpacer />
 
-    <aside class="admin-sidebar">
-        <nav aria-label="เมนูเจ้าหน้าที่">
-            <NavLink class="admin-nav-link" href="/admin" Match="NavLinkMatch.All">
-                <span aria-hidden="true">⌂</span>
-                <span>หน้าหลัก</span>
-            </NavLink>
-            <NavLink class="admin-nav-link" href="/admin/requests" Match="NavLinkMatch.Prefix">
-                <span aria-hidden="true">▦</span>
-                <span>รายการคำขอ</span>
-            </NavLink>
-        </nav>
-        <p>ข้อมูลนักศึกษาและบัญชีธนาคารเป็นข้อมูลส่วนบุคคล โปรดใช้งานเท่าที่จำเป็น</p>
-    </aside>
+        <MudMenu Label="@DisplayName"
+                 StartIcon="@Icons.Material.Filled.AccountCircle"
+                 EndIcon="@Icons.Material.Filled.ExpandMore"
+                 Color="Color.Inherit"
+                 AnchorOrigin="Origin.BottomRight"
+                 TransformOrigin="Origin.TopRight">
+            <MudMenuItem Icon="@Icons.Material.Filled.Logout"
+                         Disabled="_loggingOut"
+                         OnClick="LogoutAsync">
+                @(_loggingOut ? "กำลังออกจากระบบ..." : "ออกจากระบบ")
+            </MudMenuItem>
+        </MudMenu>
+    </MudAppBar>
 
-    <main class="admin-content">
-        @if (!string.IsNullOrWhiteSpace(_logoutError))
-        {
-            <div class="logout-error" role="alert">@_logoutError</div>
-        }
-        @Body
-    </main>
+    <MudDrawer @bind-Open="_drawerOpen"
+               Variant="DrawerVariant.Responsive"
+               Breakpoint="Breakpoint.Md"
+               Elevation="0"
+               Class="admin-drawer">
+        <MudNavMenu Class="admin-nav">
+            <MudNavLink Href="/admin"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Filled.Dashboard">
+                ภาพรวม
+            </MudNavLink>
+            <MudNavLink Href="/admin/requests"
+                        Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.FactCheck">
+                รายการคำขอ
+            </MudNavLink>
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.caption" Class="privacy-note">
+                ข้อมูลนักศึกษาและบัญชีธนาคารเป็นข้อมูลส่วนบุคคล โปรดใช้งานเท่าที่จำเป็น
+            </MudText>
+        </MudNavMenu>
+    </MudDrawer>
+
+    <MudMainContent Class="admin-content">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="admin-container">
+            @if (!string.IsNullOrWhiteSpace(_logoutError))
+            {
+                <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="mb-4">
+                    @_logoutError
+                </MudAlert>
+            }
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
 </div>

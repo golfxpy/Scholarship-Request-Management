@@ -17,7 +17,7 @@
 }
 
 .page-heading p,
-.state-card p,
+::deep .state-card p,
 .submit-panel p {
     color: #5b6f82;
     margin: 0;
@@ -35,16 +35,20 @@
     gap: 1.25rem;
 }
 
-.form-section,
+.feedback-focus:focus {
+    outline: none;
+}
+
 .submit-panel,
-.state-card {
+::deep .form-section,
+::deep .state-card {
     border: 1px solid #dde5ec;
     border-radius: 18px;
     background: #fff;
     box-shadow: 0 10px 35px rgba(24, 50, 76, .06);
 }
 
-.form-section {
+::deep .form-section {
     padding: clamp(1.25rem, 4vw, 2rem);
 }
 
@@ -279,14 +283,14 @@
     background: #fff8e9;
 }
 
-.state-card {
+::deep .state-card {
     max-width: 700px;
     margin: 1rem auto;
     padding: clamp(2rem, 6vw, 4rem);
     text-align: center;
 }
 
-.state-card h2 {
+::deep .state-card h2 {
     margin: 1rem 0 .5rem;
     color: #17324d;
 }
