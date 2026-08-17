@@ -1,0 +1,403 @@
+@page "/apply"
+@namespace ScholarshipRequest.Client.Features.PublicScholarshipRequests.Pages
+
+<PageTitle>ยื่นคำขอทุนการศึกษา</PageTitle>
+
+<div class="apply-page">
+    <header class="page-heading">
+        <span class="eyebrow">SCHOLARSHIP REQUEST</span>
+        <h1>ยื่นคำขอทุนการศึกษา</h1>
+        <p>กรอกข้อมูลให้ครบถ้วน ระบบจะออกเลขคำขอให้เมื่อบันทึกสำเร็จ</p>
+    </header>
+
+    @if (_isLoading)
+    {
+        <div class="state-card" role="status" aria-live="polite">
+            <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" />
+            <h2>กำลังเตรียมแบบฟอร์ม</h2>
+            <p>กำลังโหลดประเภททุนและประกาศความเป็นส่วนตัว</p>
+        </div>
+    }
+    else if (!_canUseForm)
+    {
+        <div class="state-card error-state"
+             role="alert"
+             tabindex="-1"
+             @ref="_feedbackElement">
+            <div class="state-icon" aria-hidden="true">!</div>
+            <h2>@(_globalErrorTitle ?? "ยังไม่สามารถเปิดแบบฟอร์มได้")</h2>
+            <p>@(_globalErrorDetail ?? "กรุณาลองใหม่อีกครั้ง")</p>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="RetryInitialLoadAsync">
+                ลองโหลดใหม่
+            </MudButton>
+        </div>
+    }
+    else if (_createdRequest is not null)
+    {
+        <section class="state-card success-state"
+                 role="status"
+                 aria-live="polite"
+                 tabindex="-1"
+                 @ref="_feedbackElement">
+            <div class="success-mark" aria-hidden="true">✓</div>
+            <span class="eyebrow">SUBMITTED</span>
+            <h2>ส่งคำขอเรียบร้อยแล้ว</h2>
+            <p>โปรดบันทึกเลขคำขอไว้สำหรับอ้างอิงกับเจ้าหน้าที่</p>
+            <div class="request-number" aria-label="เลขคำขอ">@_createdRequest.RequestNumber</div>
+            <dl class="success-details">
+                <div>
+                    <dt>สถานะ</dt>
+                    <dd>รอพิจารณา</dd>
+                </div>
+                <div>
+                    <dt>วันที่ส่ง</dt>
+                    <dd>@FormatSubmittedAt(_createdRequest.SubmittedAt)</dd>
+                </div>
+            </dl>
+            <MudButton Href="/"
+                       Variant="Variant.Outlined"
+                       Color="Color.Primary">
+                กลับหน้าแรก
+            </MudButton>
+        </section>
+    }
+    else
+    {
+        @if (!string.IsNullOrWhiteSpace(_globalErrorTitle))
+        {
+            <div class="@GlobalMessageCssClass"
+                 role="alert"
+                 tabindex="-1"
+                 @ref="_feedbackElement">
+                <strong>@_globalErrorTitle</strong>
+                @if (!string.IsNullOrWhiteSpace(_globalErrorDetail))
+                {
+                    <span>@_globalErrorDetail</span>
+                }
+            </div>
+        }
+
+        <EditForm EditContext="_editContext"
+                  OnSubmit="HandleSubmitAsync"
+                  class="application-form"
+                  novalidate>
+            <section class="form-section" aria-labelledby="student-section-title">
+                <div class="section-heading">
+                    <span class="section-number">01</span>
+                    <div>
+                        <h2 id="student-section-title">ข้อมูลนักศึกษา</h2>
+                        <p>ข้อมูลสำหรับระบุตัวตนและติดต่อกลับ</p>
+                    </div>
+                </div>
+
+                <div class="field-grid">
+                    <div class="field">
+                        <label for="student-id">รหัสนักศึกษา <span aria-hidden="true">*</span></label>
+                        <InputText id="student-id"
+                                   class="form-control"
+                                   @bind-Value="_model.StudentId"
+                                   @oninput="args => HandleTextInput(args, nameof(_model.StudentId), value => _model.StudentId = value)"
+                                   maxlength="20"
+                                   autocomplete="off"
+                                   aria-required="true" />
+                        <ValidationMessage For="@(() => _model.StudentId)" />
+                    </div>
+                    <div class="field">
+                        <label for="student-name">ชื่อ–นามสกุล <span aria-hidden="true">*</span></label>
+                        <InputText id="student-name"
+                                   class="form-control"
+                                   @bind-Value="_model.StudentName"
+                                   @oninput="args => HandleTextInput(args, nameof(_model.StudentName), value => _model.StudentName = value)"
+                                   maxlength="200"
+                                   autocomplete="name"
+                                   aria-required="true" />
+                        <ValidationMessage For="@(() => _model.StudentName)" />
+                    </div>
+                    <div class="field full-width">
+                        <label for="email">อีเมล <span aria-hidden="true">*</span></label>
+                        <InputText id="email"
+                                   class="form-control"
+                                   @bind-Value="_model.Email"
+                                   @oninput="args => HandleTextInput(args, nameof(_model.Email), value => _model.Email = value)"
+                                   maxlength="254"
+                                   type="email"
+                                   autocomplete="email"
+                                   aria-required="true" />
+                        <ValidationMessage For="@(() => _model.Email)" />
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section" aria-labelledby="education-section-title">
+                <div class="section-heading">
+                    <span class="section-number">02</span>
+                    <div>
+                        <h2 id="education-section-title">ข้อมูลการศึกษา</h2>
+                        <p>สำหรับ POC นี้เปิดรับนักศึกษาระดับปริญญาตรี วิทยาเขตหาดใหญ่</p>
+                    </div>
+                </div>
+
+                <div class="field-grid">
+                    <div class="field full-width">
+                        <label>คณะ/หน่วยการเรียน <span aria-hidden="true">*</span></label>
+                        <MudAutocomplete T="AcademicUnitResponse"
+                                         Value="_selectedAcademicUnit"
+                                         ValueChanged="HandleAcademicUnitChanged"
+                                         SearchFunc="SearchAcademicUnitsAsync"
+                                         ToStringFunc="FormatAcademicUnit"
+                                         Variant="Variant.Outlined"
+                                         Margin="Margin.Dense"
+                                         Clearable="true"
+                                         Strict="false"
+                                         DebounceInterval="250"
+                                         ShowProgressIndicator="true"
+                                         Disabled="_useOtherFaculty"
+                                         Placeholder="พิมพ์ชื่อหรือรหัสคณะ"
+                                         aria-required="true"
+                                         aria-label="ค้นหาคณะหรือหน่วยการเรียน" />
+                        @if (!string.IsNullOrWhiteSpace(_academicSearchError))
+                        {
+                            <span class="field-hint error-text" role="alert">@_academicSearchError</span>
+                        }
+                        <label class="inline-option">
+                            <input type="checkbox"
+                                   checked="@_useOtherFaculty"
+                                   @onchange="HandleOtherFacultyChanged" />
+                            ไม่พบหน่วยงานในรายการ ต้องการกรอกเอง
+                        </label>
+                        @if (_useOtherFaculty)
+                        {
+                            <InputText id="faculty-other"
+                                       class="form-control"
+                                       @bind-Value="_model.FacultyName"
+                                       @oninput="args => HandleTextInput(args, nameof(_model.FacultyName), value => _model.FacultyName = value)"
+                                       maxlength="200"
+                                       placeholder="ระบุชื่อคณะหรือหน่วยการเรียน"
+                                       aria-required="true" />
+                        }
+                        <ValidationMessage For="@(() => _model.FacultyName)" />
+                    </div>
+
+                    <div class="field full-width">
+                        <label for="major">หลักสูตร/สาขาวิชา <span class="optional">(ถ้ามี)</span></label>
+                        <InputText id="major"
+                                   class="form-control"
+                                   @bind-Value="_model.Major"
+                                   @oninput="args => HandleTextInput(args, nameof(_model.Major), value => _model.Major = value)"
+                                   maxlength="150" />
+                        <ValidationMessage For="@(() => _model.Major)" />
+                    </div>
+
+                    <fieldset class="field full-width year-fieldset">
+                        <legend>ชั้นปี <span aria-hidden="true">*</span></legend>
+                        <div class="mode-options">
+                            <label>
+                                <input type="radio"
+                                       name="year-mode"
+                                       checked="@(!_useOtherYear)"
+                                       @onchange="_ => SetYearMode(false)" />
+                                ชั้นปี 1–6
+                            </label>
+                            <label>
+                                <input type="radio"
+                                       name="year-mode"
+                                       checked="@_useOtherYear"
+                                       @onchange="_ => SetYearMode(true)" />
+                                อื่น ๆ / เกินแผน
+                            </label>
+                        </div>
+                        @if (_useOtherYear)
+                        {
+                            <InputText id="year-other"
+                                       class="form-control"
+                                       @bind-Value="_model.YearLevelOther"
+                                       @oninput="args => HandleTextInput(args, nameof(_model.YearLevelOther), value => _model.YearLevelOther = value)"
+                                       maxlength="100"
+                                       placeholder="ระบุชั้นปีหรือสถานะการศึกษา"
+                                       aria-required="true" />
+                        }
+                        else
+                        {
+                            <InputSelect id="year-level"
+                                         class="form-control"
+                                         aria-required="true"
+                                         @bind-Value="_model.YearLevel">
+                                <option value="">เลือกชั้นปี</option>
+                                @for (var year = 1; year <= 6; year++)
+                                {
+                                    <option value="@year">ชั้นปี @year</option>
+                                }
+                            </InputSelect>
+                        }
+                        <ValidationMessage For="@(() => _model.YearLevel)" />
+                        <ValidationMessage For="@(() => _model.YearLevelOther)" />
+                    </fieldset>
+
+                    <div class="field">
+                        <label for="gpax">GPAX <span aria-hidden="true">*</span></label>
+                        <InputNumber id="gpax"
+                                     class="form-control"
+                                     @bind-Value="_model.Gpax"
+                                     @oninput="args => HandleDecimalInput(args, nameof(_model.Gpax), value => _model.Gpax = value)"
+                                     min="0"
+                                     max="4"
+                                     step="0.01"
+                                     aria-required="true" />
+                        <span class="field-hint">กรอกค่าระหว่าง 0.00–4.00</span>
+                        <ValidationMessage For="@(() => _model.Gpax)" />
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section" aria-labelledby="fund-section-title">
+                <div class="section-heading">
+                    <span class="section-number">03</span>
+                    <div>
+                        <h2 id="fund-section-title">ทุนและข้อมูลการเงิน</h2>
+                        <p>เลขบัญชีจะถูกป้องกันก่อนจัดเก็บ และไม่แสดงซ้ำหลังส่งคำขอ</p>
+                    </div>
+                </div>
+
+                <div class="field-grid">
+                    <div class="field">
+                        <label for="scholarship-type">ประเภททุน <span aria-hidden="true">*</span></label>
+                        <InputSelect id="scholarship-type"
+                                     class="form-control"
+                                     aria-required="true"
+                                     @bind-Value="_model.ScholarshipTypeId">
+                            <option value="@Guid.Empty">เลือกประเภททุน</option>
+                            @foreach (var scholarshipType in _scholarshipTypes)
+                            {
+                                <option value="@scholarshipType.Id">@scholarshipType.Name</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => _model.ScholarshipTypeId)" />
+                    </div>
+                    <div class="field">
+                        <label for="requested-amount">จำนวนเงินที่ขอ (บาท) <span aria-hidden="true">*</span></label>
+                        <InputNumber id="requested-amount"
+                                     class="form-control"
+                                     @bind-Value="_model.RequestedAmount"
+                                     @oninput="args => HandleDecimalInput(args, nameof(_model.RequestedAmount), value => _model.RequestedAmount = value)"
+                                     min="0.01"
+                                     max="9999999999.99"
+                                     step="0.01"
+                                     aria-required="true" />
+                        <ValidationMessage For="@(() => _model.RequestedAmount)" />
+                    </div>
+                    <div class="field">
+                        <label for="bank-account">เลขบัญชีธนาคาร <span aria-hidden="true">*</span></label>
+                        <div class="password-field">
+                            <InputText id="bank-account"
+                                       class="form-control"
+                                       @bind-Value="_model.BankAccountNumber"
+                                       @oninput="args => HandleTextInput(args, nameof(_model.BankAccountNumber), value => _model.BankAccountNumber = value)"
+                                       maxlength="40"
+                                       type="@BankInputType"
+                                       inputmode="numeric"
+                                       autocomplete="off"
+                                       aria-required="true" />
+                            <button type="button"
+                                    class="reveal-button"
+                                    @onclick="ToggleBankVisibility"
+                                    aria-label="@BankToggleLabel">
+                                @(_showBankAccount ? "ซ่อน" : "แสดง")
+                            </button>
+                        </div>
+                        <span class="field-hint">ใช้ตัวเลข ช่องว่าง หรือเครื่องหมายขีด รวมตัวเลข 6–30 หลัก</span>
+                        <ValidationMessage For="@(() => _model.BankAccountNumber)" />
+                    </div>
+                    <div class="field">
+                        <label for="bank-account-confirm">ยืนยันเลขบัญชี <span aria-hidden="true">*</span></label>
+                        <input id="bank-account-confirm"
+                               class="@ConfirmBankCssClass"
+                               @bind="_confirmBankAccount"
+                               @bind:event="oninput"
+                               @bind:after="ClearConfirmBankErrors"
+                               maxlength="40"
+                               type="@BankInputType"
+                               inputmode="numeric"
+                               autocomplete="off"
+                               aria-required="true"
+                               aria-invalid="@(_confirmBankAccountErrors.Count > 0 ? "true" : "false")"
+                               aria-describedby="bank-account-confirm-errors" />
+                        @if (_confirmBankAccountErrors.Count > 0)
+                        {
+                            <div id="bank-account-confirm-errors">
+                                @foreach (var message in _confirmBankAccountErrors)
+                                {
+                                    <span class="validation-message">@message</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section" aria-labelledby="reason-section-title">
+                <div class="section-heading">
+                    <span class="section-number">04</span>
+                    <div>
+                        <h2 id="reason-section-title">เหตุผลและความยินยอม</h2>
+                        <p>อธิบายเหตุผลที่ต้องการรับทุนและตรวจสอบประกาศก่อนส่ง</p>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="reason">เหตุผลในการขอรับทุน <span aria-hidden="true">*</span></label>
+                    <InputTextArea id="reason"
+                                   class="form-control reason-input"
+                                   @bind-Value="_model.Reason"
+                                   @oninput="args => HandleTextInput(args, nameof(_model.Reason), value => _model.Reason = value)"
+                                   maxlength="2000"
+                                   aria-required="true" />
+                    <div class="counter">@_model.Reason.Length / 2,000</div>
+                    <ValidationMessage For="@(() => _model.Reason)" />
+                </div>
+
+                <div class="pdpa-notice" aria-labelledby="pdpa-title">
+                    <div class="pdpa-heading">
+                        <h3 id="pdpa-title">ประกาศความเป็นส่วนตัว</h3>
+                        <span>ฉบับ @_pdpaNotice!.Version</span>
+                    </div>
+                    <p>@_pdpaNotice.Content</p>
+                </div>
+
+                <label class="consent-option">
+                    <InputCheckbox @bind-Value="_model.PdpaConsent"
+                                   aria-required="true" />
+                    <span>ข้าพเจ้าได้อ่านและยอมรับเงื่อนไขการประมวลผลข้อมูลส่วนบุคคล <span aria-hidden="true">*</span></span>
+                </label>
+                <ValidationMessage For="@(() => _model.PdpaConsent)" />
+            </section>
+
+            <div class="submit-panel">
+                <div>
+                    <strong>ตรวจสอบข้อมูลก่อนส่ง</strong>
+                    <p>หลังส่งแล้ว เจ้าหน้าที่จะได้รับคำขอในสถานะรอพิจารณา</p>
+                </div>
+                <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           Disabled="_isSubmitting"
+                           Class="submit-button">
+                    @if (_isSubmitting)
+                    {
+                        <MudProgressCircular Indeterminate="true"
+                                             Color="Color.Inherit"
+                                             Size="Size.Small"
+                                             Class="me-2" />
+                        <span>กำลังส่งคำขอ...</span>
+                    }
+                    else
+                    {
+                        <span>ยืนยันและส่งคำขอ</span>
+                    }
+                </MudButton>
+            </div>
+        </EditForm>
+    }
+</div>

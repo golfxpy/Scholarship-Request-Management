@@ -1,0 +1,153 @@
+:root {
+    color-scheme: light;
+    font-synthesis: none;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+    color: #17324d;
+    background: #f4f7fa;
+    font-family: "Leelawadee UI", Tahoma, Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+h1:focus {
+    outline: 3px solid rgba(21, 94, 138, .35);
+    outline-offset: .25rem;
+    border-radius: 4px;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(21, 94, 138, .35);
+    outline-offset: 2px;
+}
+
+.validation-message {
+    color: #b3261e;
+}
+
+#blazor-error-ui {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    left: 1rem;
+    z-index: 2000;
+    display: none;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: .85rem 3rem .85rem 1rem;
+    border: 1px solid #e7b7b3;
+    border-radius: 10px;
+    color: #7d1d17;
+    background: #fff2f1;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .12);
+}
+
+#blazor-error-ui .reload {
+    margin-left: .6rem;
+    color: inherit;
+    font-weight: 700;
+}
+
+#blazor-error-ui .dismiss {
+    position: absolute;
+    top: 50%;
+    right: .75rem;
+    translate: 0 -50%;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.loading-progress {
+    position: absolute;
+    display: block;
+    width: 7rem;
+    height: 7rem;
+    inset: 25vh 0 auto;
+    margin: auto;
+}
+
+.loading-progress circle {
+    fill: none;
+    stroke: #dce5ec;
+    stroke-width: .55rem;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+}
+
+.loading-progress circle:last-child {
+    stroke: #155e8a;
+    stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * .8), 500%;
+    transition: stroke-dasharray .05s ease-in-out;
+}
+
+.loading-progress-text {
+    position: absolute;
+    inset: calc(25vh + 2.9rem) 0 auto;
+    color: #17324d;
+    text-align: center;
+    font-weight: 700;
+}
+
+.loading-progress-text::after {
+    content: var(--blazor-load-percentage-text, "กำลังโหลด");
+}
+
+.not-found {
+    width: min(680px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 8rem 0;
+    text-align: center;
+}
+
+.not-found > span {
+    color: #8ea3b5;
+    font-size: clamp(4rem, 18vw, 8rem);
+    font-weight: 800;
+    line-height: 1;
+}
+
+.not-found h1 {
+    margin: 1rem 0 .5rem;
+}
+
+.not-found p {
+    margin: 0 0 1.5rem;
+    color: #516678;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    * {
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

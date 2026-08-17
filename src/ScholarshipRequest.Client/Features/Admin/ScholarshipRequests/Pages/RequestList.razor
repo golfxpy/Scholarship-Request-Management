@@ -1,0 +1,168 @@
+@page "/admin/requests"
+@layout AdminLayout
+@attribute [Authorize(Policy = AuthenticationConstants.StaffPolicy)]
+@implements IAsyncDisposable
+
+<PageTitle>รายการคำขอทุนการศึกษา</PageTitle>
+
+<section class="request-list-page" aria-labelledby="request-list-title" aria-busy="@_loading">
+    <header class="page-header">
+        <div>
+            <span class="eyebrow">SCHOLARSHIP REQUESTS</span>
+            <h1 id="request-list-title">รายการคำขอทุนการศึกษา</h1>
+            <p>ค้นหาและตรวจสอบคำขอ โดยระบบแสดงหน้าละ 10 รายการ</p>
+        </div>
+        <a class="create-link" href="/admin/requests/new">เพิ่มคำขอแทนนักศึกษา</a>
+    </header>
+
+    <form class="filters" @onsubmit="ApplyFiltersAsync" @onsubmit:preventDefault>
+        <div class="filter-field search-field">
+            <label for="request-search">ค้นหารหัส ชื่อนักศึกษา หรือเลขที่คำขอ</label>
+            <input id="request-search"
+                   type="search"
+                   maxlength="100"
+                   autocomplete="off"
+                   placeholder="เช่น 6600000001 หรือนักศึกษาจำลอง"
+                   @bind="_searchInput"
+                   @bind:event="oninput" />
+        </div>
+
+        <div class="filter-field">
+            <label for="status-filter">สถานะ</label>
+            <select id="status-filter" @bind="_statusInput">
+                <option value="">ทุกสถานะ</option>
+                <option value="Pending">รอพิจารณา</option>
+                <option value="Approved">อนุมัติ</option>
+                <option value="Rejected">ปฏิเสธ</option>
+            </select>
+        </div>
+
+        <div class="filter-field">
+            <label for="type-filter">ประเภททุน</label>
+            <select id="type-filter" @bind="_typeInput" disabled="@(_scholarshipTypes.Count == 0)">
+                <option value="">ทุกประเภททุน</option>
+                @foreach (var type in _scholarshipTypes)
+                {
+                    <option value="@type.Id.ToString()">
+                        @type.Name@(!type.IsActive ? " (ปิดใช้งาน)" : string.Empty)
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button class="primary-action" type="submit" disabled="@_loading">ค้นหา</button>
+            <button class="secondary-action" type="button" disabled="@_loading" @onclick="ClearFiltersAsync">
+                ล้างตัวกรอง
+            </button>
+        </div>
+    </form>
+
+    @if (_loading && _result is null)
+    {
+        <div class="state-card" role="status">
+            <span class="spinner" aria-hidden="true"></span>
+            <p>กำลังโหลดรายการคำขอ...</p>
+        </div>
+    }
+    else if (_error is not null)
+    {
+        <div class="state-card error-state" role="alert">
+            <h2>@_error.Title</h2>
+            <p>@(_error.Detail ?? "กรุณาลองอีกครั้ง")</p>
+            <button type="button" @onclick="RetryAsync">ลองอีกครั้ง</button>
+        </div>
+    }
+    else if (_result is not null)
+    {
+        <div class="result-summary" role="status" aria-live="polite">
+            <p>พบ <strong>@_result.TotalItems.ToString("N0")</strong> รายการ</p>
+            @if (_loading)
+            {
+                <span>กำลังอัปเดต...</span>
+            }
+        </div>
+
+        @if (_result.Items.Count == 0)
+        {
+            <div class="state-card empty-state">
+                <h2>@(HasFilters ? "ไม่พบรายการที่ตรงกับเงื่อนไข" : "ยังไม่มีคำขอทุน")</h2>
+                <p>@(HasFilters ? "ลองเปลี่ยนคำค้นหาหรือล้างตัวกรอง" : "คำขอที่ส่งเข้าระบบจะแสดงที่นี่")</p>
+                @if (HasFilters)
+                {
+                    <button type="button" @onclick="ClearFiltersAsync">ล้างตัวกรอง</button>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="desktop-table-wrap">
+                <table>
+                    <caption class="visually-hidden">รายการคำขอทุนการศึกษา</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">เลขที่คำขอ</th>
+                            <th scope="col">นักศึกษา</th>
+                            <th scope="col">ประเภททุน</th>
+                            <th scope="col" class="number-column">จำนวนเงิน</th>
+                            <th scope="col">สถานะ</th>
+                            <th scope="col">วันที่ยื่น</th>
+                            <th scope="col"><span class="visually-hidden">การดำเนินการ</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in _result.Items)
+                        {
+                            <tr>
+                                <td><strong>@item.RequestNumber</strong></td>
+                                <td>
+                                    <span class="student-name">@item.StudentName</span>
+                                    <small>@item.StudentId</small>
+                                </td>
+                                <td>@item.ScholarshipTypeName</td>
+                                <td class="number-column">@FormatMoney(item.RequestedAmount)</td>
+                                <td><span class="status-badge @StatusClass(item.Status)">@StatusLabel(item.Status)</span></td>
+                                <td>@FormatDate(item.SubmittedAt)</td>
+                                <td><a class="detail-link" href="@DetailUrl(item.Id)">ดูรายละเอียด</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mobile-cards" aria-label="รายการคำขอทุนการศึกษา">
+                @foreach (var item in _result.Items)
+                {
+                    <article class="request-card">
+                        <div class="card-heading">
+                            <strong>@item.RequestNumber</strong>
+                            <span class="status-badge @StatusClass(item.Status)">@StatusLabel(item.Status)</span>
+                        </div>
+                        <h2>@item.StudentName</h2>
+                        <p class="student-id">รหัสนักศึกษา @item.StudentId</p>
+                        <dl>
+                            <div><dt>ประเภททุน</dt><dd>@item.ScholarshipTypeName</dd></div>
+                            <div><dt>จำนวนเงิน</dt><dd>@FormatMoney(item.RequestedAmount)</dd></div>
+                            <div><dt>วันที่ยื่น</dt><dd>@FormatDate(item.SubmittedAt)</dd></div>
+                        </dl>
+                        <a class="detail-link" href="@DetailUrl(item.Id)">ดูรายละเอียดคำขอ</a>
+                    </article>
+                }
+            </div>
+
+            <nav class="pagination" aria-label="เปลี่ยนหน้ารายการคำขอ">
+                <button type="button"
+                        disabled="@(_loading || _result.Page <= 1)"
+                        @onclick="() => GoToPageAsync(_result.Page - 1)">
+                    หน้าก่อน
+                </button>
+                <span>หน้า <strong>@_result.Page</strong> จาก <strong>@Math.Max(_result.TotalPages, 1)</strong></span>
+                <button type="button"
+                        disabled="@(_loading || _result.Page >= _result.TotalPages)"
+                        @onclick="() => GoToPageAsync(_result.Page + 1)">
+                    หน้าถัดไป
+                </button>
+            </nav>
+        }
+    }
+</section>

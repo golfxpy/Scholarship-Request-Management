@@ -1,0 +1,165 @@
+@page "/admin/requests/{Id:guid}"
+@layout AdminLayout
+@attribute [Authorize(Policy = AuthenticationConstants.StaffPolicy)]
+@implements IAsyncDisposable
+
+<PageTitle>รายละเอียดคำขอทุน</PageTitle>
+
+<section class="detail-page" aria-labelledby="detail-title" aria-busy="@_loading">
+    <a class="back-link" href="@BackUrl">← กลับรายการคำขอ</a>
+
+    @if (_loading)
+    {
+        <div class="state-card" role="status">
+            <span class="spinner" aria-hidden="true"></span>
+            <p>กำลังโหลดรายละเอียดคำขอ...</p>
+        </div>
+    }
+    else if (_error is not null)
+    {
+        <div class="state-card error-state" role="alert">
+            <h1 id="detail-title">@(_error.StatusCode == 404 ? "ไม่พบคำขอทุน" : _error.Title)</h1>
+            <p>@(_error.Detail ?? "กรุณาลองอีกครั้ง")</p>
+            @if (_error.StatusCode != 404)
+            {
+                <button type="button" @onclick="LoadAsync">ลองอีกครั้ง</button>
+            }
+        </div>
+    }
+    else if (_detail is not null)
+    {
+        <header class="detail-header">
+            <div>
+                <span class="eyebrow">REQUEST DETAIL</span>
+                <h1 id="detail-title">@_detail.RequestNumber</h1>
+                <p>ยื่นเมื่อ @FormatDate(_detail.SubmittedAt)</p>
+            </div>
+            <span class="status-badge @StatusClass(_detail.Status)">@StatusLabel(_detail.Status)</span>
+        </header>
+
+        @if (!_detail.CanEdit)
+        {
+            <div class="final-notice" role="status">
+                <strong>คำขอนี้สิ้นสุดการพิจารณาแล้ว</strong>
+                <span>สถานะ Approved/Rejected เป็นข้อมูลอ่านอย่างเดียวและไม่สามารถเปิดกลับได้</span>
+            </div>
+        }
+        else
+        {
+            <div class="pending-notice" role="status">
+                <strong>คำขอนี้รอพิจารณา</strong>
+                <span>สามารถแก้ไข ลบ อนุมัติ หรือปฏิเสธได้ในขั้นตอนจัดการคำขอ</span>
+            </div>
+
+            <section class="request-actions" aria-labelledby="request-actions-title">
+                <div>
+                    <h2 id="request-actions-title">จัดการคำขอ</h2>
+                    <p>ตรวจสอบข้อมูลให้ครบก่อนอนุมัติหรือปฏิเสธ</p>
+                </div>
+                <div class="action-buttons">
+                    <a href="@EditUrl">แก้ไข</a>
+                    <button class="approve-button" type="button" @onclick='() => OpenAction("Approved")'>อนุมัติ</button>
+                    <button class="reject-button" type="button" @onclick='() => OpenAction("Rejected")'>ปฏิเสธ</button>
+                    <button class="delete-button" type="button" @onclick='() => OpenAction("Delete")'>ลบคำขอ</button>
+                </div>
+            </section>
+
+            @if (_activeAction is not null)
+            {
+                <section class="action-panel" role="dialog" aria-modal="true" aria-labelledby="action-panel-title">
+                    <h2 id="action-panel-title">@ActionTitle</h2>
+                    <p>@ActionDescription</p>
+                    @if (_activeAction is "Approved" or "Rejected")
+                    {
+                        <label for="decision-note">
+                            หมายเหตุ @if (_activeAction == "Rejected") { <span>(จำเป็น)</span> }
+                        </label>
+                        <textarea id="decision-note"
+                                  maxlength="2000"
+                                  rows="4"
+                                  @bind="_decisionNote"
+                                  @bind:event="oninput"></textarea>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(_actionError))
+                    {
+                        <div class="action-error" role="alert">@_actionError</div>
+                    }
+                    <div class="panel-actions">
+                        <button type="button" disabled="@_actionSubmitting" @onclick="CloseAction">ยกเลิก</button>
+                        <button class="confirm-action"
+                                type="button"
+                                disabled="@_actionSubmitting"
+                                @onclick="SubmitActionAsync">
+                            @(_actionSubmitting ? "กำลังดำเนินการ..." : ConfirmActionLabel)
+                        </button>
+                    </div>
+                </section>
+            }
+        }
+
+        <div class="detail-grid">
+            <section class="detail-card" aria-labelledby="student-section-title">
+                <h2 id="student-section-title">ข้อมูลนักศึกษา</h2>
+                <dl>
+                    <div><dt>รหัสนักศึกษา</dt><dd>@_detail.StudentId</dd></div>
+                    <div><dt>ชื่อ-นามสกุล</dt><dd>@_detail.StudentName</dd></div>
+                    <div><dt>คณะ/หน่วยการเรียน</dt><dd>@_detail.FacultyName</dd></div>
+                    <div><dt>หลักสูตร/สาขาวิชา</dt><dd>@DisplayValue(_detail.Major)</dd></div>
+                    <div><dt>ชั้นปี</dt><dd>@YearLabel(_detail)</dd></div>
+                    <div><dt>GPAX</dt><dd>@_detail.Gpax.ToString("0.00")</dd></div>
+                    <div><dt>อีเมล</dt><dd class="break-value">@_detail.Email</dd></div>
+                </dl>
+            </section>
+
+            <section class="detail-card" aria-labelledby="funding-section-title">
+                <h2 id="funding-section-title">ข้อมูลทุนและการเงิน</h2>
+                <dl>
+                    <div><dt>ประเภททุน</dt><dd>@_detail.ScholarshipTypeName</dd></div>
+                    <div><dt>จำนวนเงินที่ขอ</dt><dd>@FormatMoney(_detail.RequestedAmount)</dd></div>
+                    <div><dt>เลขบัญชี</dt><dd>@_detail.MaskedBankAccountNumber</dd></div>
+                </dl>
+                <h3>เหตุผลในการขอทุน</h3>
+                <p class="long-text">@_detail.Reason</p>
+            </section>
+
+            <section class="detail-card" aria-labelledby="consent-section-title">
+                <h2 id="consent-section-title">การรับทราบและความยินยอม</h2>
+                <dl>
+                    <div><dt>แหล่งคำขอ</dt><dd>@SourceLabel(_detail.SubmissionSource)</dd></div>
+                    <div><dt>วิธีรับ consent</dt><dd>@ConsentLabel(_detail.ConsentMethod)</dd></div>
+                    <div><dt>ประกาศ PDPA</dt><dd>เวอร์ชัน @_detail.PdpaNoticeVersion</dd></div>
+                    <div><dt>วันที่รับ consent</dt><dd>@FormatDate(_detail.ConsentObtainedAt)</dd></div>
+                    @if (!string.IsNullOrWhiteSpace(_detail.CreatedByName))
+                    {
+                        <div><dt>เจ้าหน้าที่ผู้บันทึก</dt><dd>@_detail.CreatedByName</dd></div>
+                    }
+                </dl>
+                @if (!string.IsNullOrWhiteSpace(_detail.ConsentEvidenceNote))
+                {
+                    <h3>หลักฐาน/บันทึกประกอบ consent</h3>
+                    <p class="long-text">@_detail.ConsentEvidenceNote</p>
+                }
+            </section>
+
+            <section class="detail-card" aria-labelledby="decision-section-title">
+                <h2 id="decision-section-title">ผลการพิจารณา</h2>
+                @if (_detail.Status == "Pending")
+                {
+                    <p class="muted-text">ยังไม่มีผลการพิจารณา</p>
+                }
+                else
+                {
+                    <dl>
+                        <div><dt>ผลการพิจารณา</dt><dd>@StatusLabel(_detail.Status)</dd></div>
+                        <div><dt>ผู้พิจารณา</dt><dd>@DisplayValue(_detail.DecidedByName)</dd></div>
+                        <div><dt>วันที่พิจารณา</dt><dd>@FormatOptionalDate(_detail.DecidedAt)</dd></div>
+                    </dl>
+                    <h3>หมายเหตุ</h3>
+                    <p class="long-text">@DisplayValue(_detail.DecisionNote)</p>
+                }
+            </section>
+        </div>
+
+        <p class="updated-at">ปรับปรุงข้อมูลล่าสุด @FormatDate(_detail.UpdatedAt)</p>
+    }
+</section>

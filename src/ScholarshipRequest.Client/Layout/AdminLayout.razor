@@ -1,0 +1,51 @@
+@inherits LayoutComponentBase
+@using ScholarshipRequest.Client.Theme
+
+<MudThemeProvider Theme="AppTheme.Default" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<div class="admin-shell">
+    <header class="admin-header">
+        <a class="admin-brand" href="/admin" aria-label="ศูนย์จัดการคำขอทุน หน้าหลักเจ้าหน้าที่">
+            <span aria-hidden="true">S</span>
+            <span>
+                <strong>Scholarship Admin</strong>
+                <small>ศูนย์จัดการคำขอทุน</small>
+            </span>
+        </a>
+
+        <div class="staff-actions">
+            <span class="staff-name">
+                <small>เจ้าหน้าที่</small>
+                <strong>@DisplayName</strong>
+            </span>
+            <button type="button" disabled="@_loggingOut" @onclick="LogoutAsync">
+                @(_loggingOut ? "กำลังออก..." : "ออกจากระบบ")
+            </button>
+        </div>
+    </header>
+
+    <aside class="admin-sidebar">
+        <nav aria-label="เมนูเจ้าหน้าที่">
+            <NavLink class="admin-nav-link" href="/admin" Match="NavLinkMatch.All">
+                <span aria-hidden="true">⌂</span>
+                <span>หน้าหลัก</span>
+            </NavLink>
+            <NavLink class="admin-nav-link" href="/admin/requests" Match="NavLinkMatch.Prefix">
+                <span aria-hidden="true">▦</span>
+                <span>รายการคำขอ</span>
+            </NavLink>
+        </nav>
+        <p>ข้อมูลนักศึกษาและบัญชีธนาคารเป็นข้อมูลส่วนบุคคล โปรดใช้งานเท่าที่จำเป็น</p>
+    </aside>
+
+    <main class="admin-content">
+        @if (!string.IsNullOrWhiteSpace(_logoutError))
+        {
+            <div class="logout-error" role="alert">@_logoutError</div>
+        }
+        @Body
+    </main>
+</div>

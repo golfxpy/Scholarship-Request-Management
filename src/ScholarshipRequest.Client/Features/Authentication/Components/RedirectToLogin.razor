@@ -1,0 +1,19 @@
+@inject NavigationManager Navigation
+
+<div class="route-status" role="status">กำลังไปยังหน้าเข้าสู่ระบบ...</div>
+
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var relativePath = Navigation.ToBaseRelativePath(Navigation.Uri);
+        var returnUrl = ReturnUrlValidator.Sanitize($"/{relativePath}");
+        Navigation.NavigateTo(
+            $"/admin/login?returnUrl={Uri.EscapeDataString(returnUrl)}",
+            replace: true);
+    }
+}

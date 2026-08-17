@@ -1,0 +1,139 @@
+.app-header {
+    border-bottom: 1px solid #dde5ec;
+    background: rgba(255, 255, 255, .96) !important;
+    backdrop-filter: blur(14px);
+}
+
+.brand-link {
+    display: flex;
+    gap: .75rem;
+    align-items: center;
+    color: #17324d;
+    text-decoration: none;
+}
+
+.brand-link > span:last-child {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.brand-link strong {
+    font-size: 1rem;
+}
+
+.brand-link small {
+    margin-top: .2rem;
+    color: #516678;
+    font-size: .7rem;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 10px;
+    color: #fff;
+    background: linear-gradient(135deg, #155e8a, #0e425f);
+    font-weight: 800;
+}
+
+.header-nav {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+.nav-link {
+    display: inline-flex;
+    min-height: 2.25rem;
+    padding: .45rem .8rem;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    color: #17324d;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.nav-link:hover {
+    background: #edf4f8;
+}
+
+.apply-nav {
+    color: #fff;
+    background: #155e8a;
+    box-shadow: 0 3px 10px rgba(21, 94, 138, .22);
+}
+
+.apply-nav:hover {
+    color: #fff;
+    background: #0e4d73;
+}
+
+.mobile-label {
+    display: none;
+}
+
+.staff-mobile-label {
+    display: none;
+}
+
+.main-content {
+    min-height: 100vh;
+    padding-top: var(--mud-appbar-height);
+    background:
+        radial-gradient(circle at 10% 0, rgba(21, 94, 138, .08), transparent 28rem),
+        #f4f7fa;
+}
+
+.site-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    width: min(1180px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 2rem 0;
+    border-top: 1px solid #dde5ec;
+    color: #516678;
+    font-size: .82rem;
+}
+
+.site-footer div {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+}
+
+.site-footer strong {
+    color: #40576b;
+}
+
+@media (max-width: 600px) {
+    .brand-link small,
+    .home-nav,
+    .staff-desktop-label,
+    .desktop-label {
+        display: none;
+    }
+
+    .mobile-label,
+    .staff-mobile-label {
+        display: inline;
+    }
+
+    .staff-nav {
+        padding-inline: .55rem;
+    }
+
+    .site-footer {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 380px) {
+    .brand-link > span:last-child {
+        display: none;
+    }
+}

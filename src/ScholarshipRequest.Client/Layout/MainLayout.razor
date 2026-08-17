@@ -1,0 +1,44 @@
+@inherits LayoutComponentBase
+@using ScholarshipRequest.Client.Theme
+
+<MudThemeProvider Theme="AppTheme.Default" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0" Class="app-header">
+        <a class="brand-link" href="/" aria-label="ระบบจัดการคำขอทุนการศึกษา หน้าแรก">
+            <span class="brand-mark" aria-hidden="true">S</span>
+            <span>
+                <strong>Scholarship Request</strong>
+                <small>ระบบจัดการคำขอทุนการศึกษา</small>
+            </span>
+        </a>
+
+        <MudSpacer />
+
+        <nav class="header-nav" aria-label="เมนูหลัก">
+            <a class="nav-link home-nav" href="/">หน้าแรก</a>
+            <a class="nav-link staff-nav" href="/admin/login" aria-label="เข้าสู่ระบบเจ้าหน้าที่">
+                <span class="staff-desktop-label">สำหรับเจ้าหน้าที่</span>
+                <span class="staff-mobile-label" aria-hidden="true">เจ้าหน้าที่</span>
+            </a>
+            <a class="nav-link apply-nav" href="/apply" aria-label="ยื่นคำขอทุน">
+                <span class="desktop-label">ยื่นคำขอทุน</span>
+                <span class="mobile-label" aria-hidden="true">ยื่นคำขอ</span>
+            </a>
+        </nav>
+    </MudAppBar>
+
+    <MudMainContent Class="main-content">
+        @Body
+        <footer class="site-footer">
+            <div>
+                <strong>Scholarship Request Management</strong>
+                <span>ระบบต้นแบบสำหรับจัดการคำขอทุนการศึกษา</span>
+            </div>
+            <span>POC · วิทยาเขตหาดใหญ่</span>
+        </footer>
+    </MudMainContent>
+</MudLayout>
